@@ -57,34 +57,35 @@ public class DBUtilities {
 //==================================================================================================
 // Gets User's tasks
 
-    public static ArrayList<String> getTasks(Context context){
-        db = FirebaseFirestore.getInstance();
-        System.out.println("=========="+mAuth.getCurrentUser().getUid());
-        ArrayList<String> tasks = new ArrayList<String>();
-
-        db.collection("users")
-                .document(mAuth.getCurrentUser().getUid())
-                .collection("tasks")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                System.out.println("================"+document.getData().toString());
-                                tasks.add(document.getData().toString());
-                            }
-                            System.out.println("+++++++++++++="+tasks);
-//                            Intent intent = new Intent(context, TasksPageActivity.class);
-//                            context.startActivity(intent);
-                        }
-                    }
-                });
-
-        System.out.println("1111111111111");
-        System.out.println(tasks);
-        return tasks;
-    }
+//    public static ArrayList<String> getTasks(Context context){
+//        db = FirebaseFirestore.getInstance();
+//        System.out.println("=========="+mAuth.getCurrentUser().getUid());
+//        ArrayList<String> tasks = new ArrayList<String>();
+//
+//        db.collection("users")
+//                .document(mAuth.getCurrentUser().getUid())
+//                .collection("tasks")
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                System.out.println("================"+document.getData().toString());
+//                                tasks.add(document.getData().toString());
+////                                populateData(tasks);
+//                            }
+//                            System.out.println("+++++++++++++="+tasks);
+////                            Intent intent = new Intent(context, TasksPageActivity.class);
+////                            context.startActivity(intent);
+//                        }
+//                    }
+//                });
+//
+//        System.out.println("1111111111111");
+//        System.out.println(tasks);
+//        return tasks;
+//    }
 
 //==================================================================================================
 

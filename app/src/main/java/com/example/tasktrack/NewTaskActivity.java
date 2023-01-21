@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class NewTaskActivity extends AppCompatActivity {
     EditText taskTitle;
-    Button addTaskBtn;
+    Button addTaskBtn, backBtn;
     private FirebaseAuth mAuth;
 
 
@@ -36,12 +36,21 @@ public class NewTaskActivity extends AppCompatActivity {
 
         taskTitle = findViewById(R.id.taskTitle);
         addTaskBtn = findViewById(R.id.addTaskBtn);
+        backBtn = findViewById(R.id.backBtn);
+
 
         addTaskBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String title = taskTitle.getText().toString().trim();
                 createTask(title);
+            }
+        });
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(NewTaskActivity.this, TasksPageActivity.class);
+                startActivity(intent);
             }
         });
     }

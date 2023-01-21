@@ -40,9 +40,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerBtn = findViewById(R.id.registerBtn);
         loginBtn = findViewById(R.id.loginAct);
-        emailInput = findViewById(R.id.registerEmail);
-        passwordInput = findViewById(R.id.registerPassword);
-        nameInput = findViewById(R.id.registerName);
+        emailInput = findViewById(R.id.registerEmailEditText);
+        passwordInput = findViewById(R.id.registerPasswordEditText);
+        nameInput = findViewById(R.id.registerNameEditText);
 
         if (mAuth.getCurrentUser() != null){
             Intent intent = new Intent(RegisterActivity.this, TasksPageActivity.class);
