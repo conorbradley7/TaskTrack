@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 
 public class TasksPageActivity extends AppCompatActivity {
     private Button logOut, newTask;
-    private RecyclerView cardView = null;
+    private RecyclerView recycleView = null;
     private DataAdapter adapter;
     private ArrayList<String> tasks = null;
 
@@ -46,6 +48,9 @@ public class TasksPageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_tasks_page);
 
         logOut = findViewById(R.id.logOutBtn);
@@ -53,9 +58,9 @@ public class TasksPageActivity extends AppCompatActivity {
 
         pageTitle = findViewById(R.id.pageTitle);
 
-        cardView = findViewById(R.id.cardView);
-        cardView.setLayoutManager(new LinearLayoutManager(this));
-        cardView.setItemAnimator(new DefaultItemAnimator());
+        recycleView = findViewById(R.id.recycleView);
+        recycleView.setLayoutManager(new LinearLayoutManager(this));
+        recycleView.setItemAnimator(new DefaultItemAnimator());
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -108,7 +113,7 @@ public class TasksPageActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                tasks.add(document.getData().toString());
+                                tasks.add(document.getString("title"));
                                 System.out.println("first");
                                 onResume();
                             }
@@ -124,7 +129,7 @@ public class TasksPageActivity extends AppCompatActivity {
         // make the adapter and set it to recycleView from received tasks
         System.out.println("===================>"+tasks);
         adapter = new DataAdapter(this, R.layout.row_layout, tasks);
-        cardView.setAdapter(adapter);
+        recycleView.setAdapter(adapter);
     }
 
 }
