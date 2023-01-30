@@ -17,14 +17,47 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
     // USed for working with the recycle view list element
     private Context context;
     private int rowID;
-    private ArrayList<String> taskTitles;
+    private ArrayList<TaskObj> taskObjs;
+    public ArrayList<String> taskTitlesList;
+    public ArrayList<String> taskMoreDetailsList;
+    public ArrayList<String> taskTagsList;
+    public ArrayList<String> taskDatesList;
 
 
-    public DataAdapter(Context context, int rowID, ArrayList<String> taskTitles) {
+    public DataAdapter(Context context, int rowID, ArrayList<TaskObj> taskObjs) {
         this.context = context;
         this.rowID = rowID;
+        this.taskObjs = taskObjs;
+        this.taskTitlesList = new ArrayList<String>();
+        this.taskMoreDetailsList = new ArrayList<String>();
+        this.taskTagsList = new ArrayList<String>();
+        this.taskDatesList = new ArrayList<String>();
 
-        this.taskTitles = taskTitles;
+
+        for (int i=0; i < taskObjs.size(); i++){
+            String rowTitle = taskObjs.get(i).getTitle();
+            String rowDetails = taskObjs.get(i).getMoreDetails();
+            String rowTag = taskObjs.get(i).getTag();
+            String rowDate = taskObjs.get(i).getDate();
+
+            if (rowTitle==null){rowTitle="";}
+            if (rowDetails==null){rowDetails="";}
+            if (rowTag==null){rowTag="";}
+            if (rowDate==null){rowDate="";}
+
+
+            System.out.println("title: " + rowTitle+
+                    "\ndetails: " + rowDetails +
+                    "\ntag: " + rowTag +
+                    "\ndate: "+rowDate);
+
+            System.out.println(taskTitlesList+"=====<");
+            taskTitlesList.add(rowTitle);
+            taskMoreDetailsList.add(rowDetails);
+            taskTagsList.add(rowTag);
+            taskDatesList.add(rowDate);
+
+        }
     }
 
     @NonNull
@@ -40,23 +73,26 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
         // populate or bind the viewholder fields with data
         // takes in an integer pos marking the index of the list.
         // populates that list item with appropriate name, image and position of player
-        holder.rowTitle.setText(taskTitles.get(pos));
+        holder.rowTitle.setText(taskTitlesList.get(pos));
+        holder.rowDate.setText(taskDatesList.get(pos));
 
     }
 
     @Override
     public int getItemCount() {
-        return taskTitles.size();
+        return taskObjs.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
         public TextView rowTitle;
+        public TextView rowDate;
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             rowTitle = itemView.findViewById(R.id.rowTitle);
+            rowDate = itemView.findViewById(R.id.rowDate);
         }
 
     }
