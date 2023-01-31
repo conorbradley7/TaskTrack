@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -74,7 +73,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
         // takes in an integer pos marking the index of the list.
         // populates that list item with appropriate name, image and position of player
         holder.rowTitle.setText(taskTitlesList.get(pos));
-        holder.rowDate.setText(taskDatesList.get(pos));
+        holder.rowDate.setText(taskTagsList.get(pos));
 
     }
 
@@ -92,7 +91,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             rowTitle = itemView.findViewById(R.id.rowTitle);
-            rowDate = itemView.findViewById(R.id.rowDate);
+            rowDate = itemView.findViewById(R.id.rowTag);
         }
 
     }

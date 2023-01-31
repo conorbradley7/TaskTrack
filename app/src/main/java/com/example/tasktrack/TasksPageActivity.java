@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,12 +13,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,34 +36,50 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.time.LocalDate;
 
-public class TasksPageActivity extends AppCompatActivity {
-    private Button logOut, newTask, popupAddTaskBtn, popupBackBtn, popupDateBtn;
+
+import static com.example.tasktrack.CalendarUtils.daysInMonthArray;
+import static com.example.tasktrack.CalendarUtils.daysInWeekArray;
+import static com.example.tasktrack.CalendarUtils.monthYearFromDate;
+
+
+
+
+public class TasksPageActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
+    private Button logOut, newTask, popupAddTaskBtn, popupBackBtn, popupDateBtn, prevWeekBtn, nextWeekBtn;
     private RecyclerView recycleView = null;
     private DataAdapter adapter;
     private ArrayList<TaskObj> tasks = null;
-    private EditText popupTaskTitle, popupTaskMoreDetails;
 
+    //DB
     private static FirebaseAuth mAuth;
     private static FirebaseFirestore db;
 
-    private TextView pageTitle;
+    //Calendar
+    private TextView monthYearText;
+    private RecyclerView calendarRecyclerView;
 
+
+    //New Task
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
     private DatePickerDialog datePickerDialog;
-
+    private EditText popupTaskTitle, popupTaskMoreDetails;
+    private Spinner popupTaskTag;
 
 //==================================================================================================
     // OnCreate
     // => Check Logged In
     // => Get Task Data
-    // => Button Listeners
+    // => Populate Task List
+    // => Button Listeners... Popup Dialog
 //==================================================================================================
 
     @Override
@@ -72,10 +92,15 @@ public class TasksPageActivity extends AppCompatActivity {
         //wire widgets
         logOut = findViewById(R.id.logOutBtn);
         newTask = findViewById(R.id.newTaskBtn);
-        pageTitle = findViewById(R.id.pageTitle);
         recycleView = findViewById(R.id.recycleView);
         recycleView.setLayoutManager(new LinearLayoutManager(this));
         recycleView.setItemAnimator(new DefaultItemAnimator());
+
+        calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
+        monthYearText = findViewById(R.id.monthYearTV);
+        prevWeekBtn = findViewById(R.id.prevWeek);
+        nextWeekBtn = findViewById(R.id.nextWeek);
+
 
         //Get db instance
         mAuth = FirebaseAuth.getInstance();
@@ -86,7 +111,8 @@ public class TasksPageActivity extends AppCompatActivity {
             Intent intent = new Intent(TasksPageActivity.this, LoginActivity.class);
             startActivity(intent);
         } else {
-//          String name = getUserName();
+            CalendarUtils.selectedDate = LocalDate.now();
+            setWeekView();
             tasks = getTasks(this);
 
             logOut.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +130,45 @@ public class TasksPageActivity extends AppCompatActivity {
                     newTaskDialog();
                 }
             });
+
+            prevWeekBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CalendarUtils.selectedDate = CalendarUtils.selectedDate.minusWeeks(1);
+                    setWeekView();
+                    tasks = getTasks(TasksPageActivity.this);
+                }
+            });
+
+            nextWeekBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusWeeks(1);
+                    setWeekView();
+                    tasks = getTasks(TasksPageActivity.this);
+                }
+            });
         }
+    }
+
+//==================================================================================================
+    // Calendar
+//==================================================================================================
+    public void setWeekView(){
+        monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
+        ArrayList<LocalDate> days = daysInWeekArray(CalendarUtils.selectedDate);
+
+        CalendarAdapter calendarAdapter = new CalendarAdapter(days, this);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
+        calendarRecyclerView.setLayoutManager(layoutManager);
+        calendarRecyclerView.setAdapter(calendarAdapter);
+    }
+
+    @Override
+    public void onItemClick(int position, LocalDate date) {
+        CalendarUtils.selectedDate = date;
+        tasks = getTasks(this);
+        setWeekView();
     }
 
 
@@ -117,17 +181,21 @@ public class TasksPageActivity extends AppCompatActivity {
     public ArrayList<TaskObj> getTasks(Context context) {
         System.out.println("getting tasks");
         db = FirebaseFirestore.getInstance();
-        System.out.println("==========" + mAuth.getCurrentUser().getUid());
         ArrayList<TaskObj> tasks = new ArrayList<>();
+
+        String date = CalendarUtils.formattedDate(CalendarUtils.selectedDate);
+        System.out.println(date);
 
         db.collection("users")
                 .document(mAuth.getCurrentUser().getUid())
-                .collection("tasks").whereEqualTo("date", getTodaysDate())
+                .collection("tasks").whereEqualTo("date", date)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        System.out.println("HEREEEE");
                         if (task.isSuccessful()) {
+                            System.out.println("SUCCESS");
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String taskTitle = (document.getString("title"));
                                 String taskMoreDetails = (document.getString("moreDetails"));
@@ -136,8 +204,8 @@ public class TasksPageActivity extends AppCompatActivity {
                                 TaskObj taskObj = new TaskObj(taskTitle, taskMoreDetails, taskTag, taskDate);
                                 tasks.add(taskObj);
                                 System.out.println("first");
-                                onResume();
                             }
+                            onResume();
                         }
                     }
                 });
@@ -147,9 +215,11 @@ public class TasksPageActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        System.out.println("===========RESUMING=============");
         // make the adapter and set it to recycleView from received tasks
         adapter = new DataAdapter(this, R.layout.row_layout, tasks);
         recycleView.setAdapter(adapter);
+        setWeekView();
     }
 
 //==================================================================================================
@@ -172,13 +242,29 @@ public class TasksPageActivity extends AppCompatActivity {
         dialog = dialogBuilder.create();
         dialog.show();
 
+        popupTaskTag = taskPopupView.findViewById(R.id.tagDropdown);
+
+        //==========================================================================================
+        //HARDCODED TAGS
+        //TODO: Tags => User Attribute, User makes their own tags
+        //==========================================================================================
+        ArrayList<String> userTags = new ArrayList<>();
+        userTags.add("School");
+        userTags.add("Personal");
+        userTags.add("Work");
+
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, userTags);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        popupTaskTag.setAdapter(adapter);
+
         popupAddTaskBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String title = popupTaskTitle.getText().toString().trim();
                 String moreDetails = popupTaskMoreDetails.getText().toString().trim();
                 String date = popupDateBtn.getText().toString().trim();
-                TaskObj task = new TaskObj(title, moreDetails, "", date);
+                String tag = popupTaskTag.getSelectedItem().toString().trim();
+                TaskObj task = new TaskObj(title, moreDetails, tag, date);
                 createTask(task);
             }
         });
@@ -236,45 +322,50 @@ public class TasksPageActivity extends AppCompatActivity {
     }
 
     private String makeDateString(int day, int month, int year){
-        return getMonthFormat(month) + " " + day + " " + year;
+        String strDay;
+        if (day < 10){
+            strDay = "0" + Integer.toString(day);
+        }
+        else{strDay = Integer.toString(day);}
+        return getMonthFormat(month) + " " + strDay + " " + year;
     };
 
     private String getMonthFormat(int month){
         if (month == 1){
-            return "Jan";
+            return "January";
         }
         if (month == 2){
-            return "Feb";
+            return "February";
         }
         if (month == 3){
-            return "Mar";
+            return "March";
         }
         if (month == 4){
-            return "Apr";
+            return "April";
         }
         if (month == 5){
             return "May";
         }
         if (month == 6){
-            return "Jun";
+            return "June";
         }
         if (month == 7){
-            return "Jul";
+            return "July";
         }
         if (month == 8){
-            return "Aug";
+            return "August";
         }
         if (month == 9){
-            return "Sep";
+            return "September";
         }
         if (month == 10){
-            return "Oct";
+            return "October";
         }
         if (month == 11){
-            return "Nov";
+            return "November";
         }
         if (month == 12){
-            return "Dec";
+            return "December";
         }
         return "ERROR";
     }
@@ -282,7 +373,6 @@ public class TasksPageActivity extends AppCompatActivity {
     public void openDatePicker(){
         datePickerDialog.show();
     }
-
 
 
 //==================================================================================================
@@ -314,6 +404,7 @@ public class TasksPageActivity extends AppCompatActivity {
             dbTask.put("moreDetails", moreDetails);
             dbTask.put("tag", tag);
             dbTask.put("date", date);
+            dbTask.put("completed", false);
 
             db.collection("users")
                     .document(mAuth.getCurrentUser().getUid())
@@ -335,7 +426,6 @@ public class TasksPageActivity extends AppCompatActivity {
                         }
                     });
         }
-
     }
 }
 

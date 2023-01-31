@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/login_register_background.xml" value="0.18" />
+        <entry key="app/src/main/res/drawable/selected_date_background.xml" value="0.1325" />
         <entry key="app/src/main/res/drawable/splash_background.xml" value="0.1605" />
         <entry key="app/src/main/res/drawable/task_background.xml" value="0.2515" />
         <entry key="app/src/main/res/drawable/task_list_background.xml" value="0.11" />
@@ -12,8 +13,9 @@
         <entry key="app/src/main/res/layout/activity_new_task.xml" value="0.19965871175130206" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.33087310791015623" />
         <entry key="app/src/main/res/layout/activity_splash_screeen.xml" value="0.2171875" />
-        <entry key="app/src/main/res/layout/activity_tasks_page.xml" value="0.2656687418619792" />
-        <entry key="app/src/main/res/layout/new_task_popup.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_tasks_page.xml" value="0.2" />
+        <entry key="app/src/main/res/layout/calendar_cell.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/new_task_popup.xml" value="0.22" />
         <entry key="app/src/main/res/layout/row_layout.xml" value="0.33" />
       </map>
     </option>
