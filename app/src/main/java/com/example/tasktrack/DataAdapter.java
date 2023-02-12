@@ -22,8 +22,11 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
     public ArrayList<String> taskTagsList;
     public ArrayList<String> taskDatesList;
 
+    RecycleViewInterface recycleViewInterface;
 
-    public DataAdapter(Context context, int rowID, ArrayList<TaskObj> taskObjs) {
+
+
+    public DataAdapter(Context context, int rowID, ArrayList<TaskObj> taskObjs, RecycleViewInterface recycleViewInterface) {
         this.context = context;
         this.rowID = rowID;
         this.taskObjs = taskObjs;
@@ -31,6 +34,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
         this.taskMoreDetailsList = new ArrayList<String>();
         this.taskTagsList = new ArrayList<String>();
         this.taskDatesList = new ArrayList<String>();
+        this.recycleViewInterface = recycleViewInterface;
+
 
 
         for (int i=0; i < taskObjs.size(); i++){
@@ -64,7 +69,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // inflate the layout and return the tree view
         View v = LayoutInflater.from(this.context).inflate(this.rowID, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, recycleViewInterface);
     }
 
     @Override
@@ -88,10 +93,25 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
         public TextView rowDate;
 
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, RecycleViewInterface recycleViewInterface) {
             super(itemView);
             rowTitle = itemView.findViewById(R.id.rowTitle);
             rowDate = itemView.findViewById(R.id.rowTag);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // call the RecycleView Interface Method
+                    if (recycleViewInterface != null){
+                        //get pos
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION){
+                            recycleViewInterface.onTaskItemClick(position);
+                        }
+                    }
+                }
+            });
+
         }
 
     }

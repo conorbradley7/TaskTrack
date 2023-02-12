@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Boolean isLoggedIn = DBUtilities.checkLoggedIn();
         if (isLoggedIn){
-            Intent intent = new Intent(LoginActivity.this, TasksPageActivity.class);
+            Intent intent = new Intent(LoginActivity.this, LandingPageActivity.class);
             startActivity(intent);
         }
 

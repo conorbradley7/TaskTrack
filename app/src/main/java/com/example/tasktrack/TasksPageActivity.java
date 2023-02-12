@@ -3,6 +3,7 @@ package com.example.tasktrack;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -52,8 +53,8 @@ import static com.example.tasktrack.CalendarUtils.monthYearFromDate;
 
 
 
-public class TasksPageActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
-    private Button logOut, newTask, popupAddTaskBtn, popupBackBtn, popupDateBtn, prevWeekBtn, nextWeekBtn;
+public class TasksPageActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener, RecycleViewInterface{
+    private Button logOut, newTask, newAddTaskBtn, newBackBtn, newDateBtn, prevWeekBtn, nextWeekBtn;
     private RecyclerView recycleView = null;
     private DataAdapter adapter;
     private ArrayList<TaskObj> tasks = null;
@@ -68,11 +69,18 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 
 
     //New Task
-    private AlertDialog.Builder dialogBuilder;
-    private AlertDialog dialog;
+    private AlertDialog.Builder createTaskDialogBuilder, completeTaskDialogBuilder;
+    private AlertDialog createTaskDialog, completeTaskDialog;
     private DatePickerDialog datePickerDialog;
-    private EditText popupTaskTitle, popupTaskMoreDetails;
-    private Spinner popupTaskTag;
+    private EditText newTaskTitle, newTaskMoreDetails, newTaskExpDur, newTaskPriority;
+    private Spinner newTaskTag;
+
+    //Start+Complete Tasks
+    private TextView startCompleteTaskTitle, startCompleteTaskDetails;
+    private EditText completeTaskDuration, completeTaskDifficulty;
+    private Button startTaskBtn, completeTaskBtn, incompleteTaskBtn, startCompleteBackBtn;
+    private ConstraintLayout completeTaskLayout, startTaskLayout;
+
 
 //==================================================================================================
     // OnCreate
@@ -105,11 +113,14 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         //Get db instance
         mAuth = FirebaseAuth.getInstance();
 
+        Intent intent = getIntent();
+        User user = (User)intent.getExtras().getSerializable("user");
+
         Boolean isLoggedIn = DBUtilities.checkLoggedIn();
         if (!isLoggedIn) {
             Toast.makeText(TasksPageActivity.this, "Error! Signed Out, Please Log In", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(TasksPageActivity.this, LoginActivity.class);
-            startActivity(intent);
+            Intent loggedOutIntent = new Intent(TasksPageActivity.this, LoginActivity.class);
+            startActivity(loggedOutIntent);
         } else {
             CalendarUtils.selectedDate = LocalDate.now();
             setWeekView();
@@ -165,7 +176,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
     }
 
     @Override
-    public void onItemClick(int position, LocalDate date) {
+    public void onCalanderItemClick(int position, LocalDate date) {
         CalendarUtils.selectedDate = date;
         tasks = getTasks(this);
         setWeekView();
@@ -201,7 +212,11 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                                 String taskMoreDetails = (document.getString("moreDetails"));
                                 String taskTag = (document.getString("tag"));
                                 String taskDate = (document.getString("date"));
-                                TaskObj taskObj = new TaskObj(taskTitle, taskMoreDetails, taskTag, taskDate);
+                                String taskExpDur = (document.getString("expDur"));
+                                String taskPriority = (document.getString("priority"));
+                                Boolean taskStarted = (document.getBoolean("started"));
+                                String id = (document.getId());
+                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails, taskTag, taskDate, taskExpDur, taskPriority, taskStarted);
                                 tasks.add(taskObj);
                                 System.out.println("first");
                             }
@@ -213,11 +228,14 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
     }
 
     @Override
+    public void onTaskItemClick(int pos) {completeTaskDialog(pos);}
+
+    @Override
     protected void onResume() {
         super.onResume();
         System.out.println("===========RESUMING=============");
         // make the adapter and set it to recycleView from received tasks
-        adapter = new DataAdapter(this, R.layout.row_layout, tasks);
+        adapter = new DataAdapter(this, R.layout.row_layout, tasks, this);
         recycleView.setAdapter(adapter);
         setWeekView();
     }
@@ -227,22 +245,25 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 //==================================================================================================
 
     public void newTaskDialog() {
-        dialogBuilder = new AlertDialog.Builder(this);
-        final View taskPopupView = getLayoutInflater().inflate(R.layout.new_task_popup, null);
-        popupAddTaskBtn = taskPopupView.findViewById(R.id.addTaskBtn);
-        popupBackBtn = taskPopupView.findViewById(R.id.backBtn);
-        popupTaskTitle = taskPopupView.findViewById(R.id.taskTitleEditText);
-        popupTaskMoreDetails = taskPopupView.findViewById(R.id.taskMoreDetailsEditText);
+        createTaskDialogBuilder = new AlertDialog.Builder(this);
+        final View createTaskPopupView = getLayoutInflater().inflate(R.layout.new_task_popup, null);
+        newAddTaskBtn = createTaskPopupView.findViewById(R.id.addTaskBtn);
+        newBackBtn = createTaskPopupView.findViewById(R.id.backBtn);
+        newTaskTitle = createTaskPopupView.findViewById(R.id.taskTitleEditText);
+        newTaskMoreDetails = createTaskPopupView.findViewById(R.id.taskMoreDetailsEditText);
+        newTaskExpDur = createTaskPopupView.findViewById(R.id.taskExpDurationEditText);
+        newTaskPriority = createTaskPopupView.findViewById(R.id.taskPriorityEditText);
 
 
-        popupDateBtn = taskPopupView.findViewById(R.id.newTaskDate);
-        popupDateBtn.setText(getTodaysDate());
 
-        dialogBuilder.setView(taskPopupView);
-        dialog = dialogBuilder.create();
-        dialog.show();
+        newDateBtn = createTaskPopupView.findViewById(R.id.newTaskDate);
+        newDateBtn.setText(getTodaysDate());
 
-        popupTaskTag = taskPopupView.findViewById(R.id.tagDropdown);
+        createTaskDialogBuilder.setView(createTaskPopupView);
+        createTaskDialog = createTaskDialogBuilder.create();
+        createTaskDialog.show();
+
+        newTaskTag = createTaskPopupView.findViewById(R.id.tagDropdown);
 
         //==========================================================================================
         //HARDCODED TAGS
@@ -255,29 +276,33 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, userTags);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-        popupTaskTag.setAdapter(adapter);
+        newTaskTag.setAdapter(adapter);
 
-        popupAddTaskBtn.setOnClickListener(new View.OnClickListener() {
+        newAddTaskBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String title = popupTaskTitle.getText().toString().trim();
-                String moreDetails = popupTaskMoreDetails.getText().toString().trim();
-                String date = popupDateBtn.getText().toString().trim();
-                String tag = popupTaskTag.getSelectedItem().toString().trim();
-                TaskObj task = new TaskObj(title, moreDetails, tag, date);
+                String title = newTaskTitle.getText().toString().trim();
+                String moreDetails = newTaskMoreDetails.getText().toString().trim();
+                String date = newDateBtn.getText().toString().trim();
+                String tag = newTaskTag.getSelectedItem().toString().trim();
+                String expDur = newTaskExpDur.getText().toString().trim();
+                String priority = newTaskPriority.getText().toString().trim();
+                String id = "";
+
+                TaskObj task = new TaskObj(id, title, moreDetails, tag, date, expDur, priority, false);
                 createTask(task);
             }
         });
 
-        popupBackBtn.setOnClickListener(new View.OnClickListener() {
+        newBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.hide();
+                createTaskDialog.dismiss();
             }
         });
 
-        System.out.println(popupDateBtn);
-        popupDateBtn.setOnClickListener(new View.OnClickListener() {
+        System.out.println(newDateBtn);
+        newDateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openDatePicker();
@@ -287,9 +312,57 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         initDatePicker();
     }
 
-    //==============================================================================================
-        //DATE PICKER
-    //==============================================================================================
+//==================================================================================================
+    // Task Details Popup
+//==================================================================================================
+    public void completeTaskDialog(int pos){
+        completeTaskDialogBuilder = new AlertDialog.Builder(this);
+        final View completeTaskPopupView = getLayoutInflater().inflate(R.layout.complete_task_popup, null);
+
+        completeTaskDialogBuilder.setView(completeTaskPopupView);
+        completeTaskDialog = completeTaskDialogBuilder.create();
+        TaskObj task = tasks.get(pos);
+
+
+
+        startCompleteTaskTitle = completeTaskPopupView.findViewById(R.id.completePopupTaskTitle);
+        startCompleteTaskDetails = completeTaskPopupView.findViewById(R.id.completePopupTaskDetails);
+        startCompleteBackBtn = completeTaskPopupView.findViewById(R.id.cancelTaskPopup);
+
+        //Start Task Elements
+        startTaskBtn = completeTaskPopupView.findViewById(R.id.startTaskBtn);
+        startTaskLayout = completeTaskPopupView.findViewById(R.id.startTaskLayout);
+
+        //Complete Task Elements
+        completeTaskDuration = completeTaskPopupView.findViewById(R.id.taskActualDurationEditText);
+        completeTaskDifficulty = completeTaskPopupView.findViewById(R.id.taskDiifficultyEditText);
+        completeTaskBtn = completeTaskPopupView.findViewById(R.id.completeTask);
+        incompleteTaskBtn = completeTaskPopupView.findViewById(R.id.incompleteTask);
+        completeTaskLayout = completeTaskPopupView.findViewById(R.id.completeTaskLayout);
+        completeTaskDialog.show();
+
+        startCompleteTaskTitle.setText(task.getTitle());
+        startCompleteTaskDetails.setText(task.getMoreDetails());
+
+        if (task.getStarted() == true){
+            startTaskLayout.setVisibility(View.GONE);
+            completeTaskLayout.setVisibility(View.VISIBLE);
+        }
+
+        startTaskBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startTask(task);
+            }
+        });
+
+
+
+    }
+    
+//==============================================================================================
+    //DATE PICKER
+//==============================================================================================
 
     private String getTodaysDate(){
         Calendar cal = Calendar.getInstance();
@@ -300,14 +373,14 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         return makeDateString(day,month,year);
     }
 
-    private  void initDatePicker(){
+    private void initDatePicker(){
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month+1;
                 String date = makeDateString(day, month, year);
                 System.out.println("=========>"+date);
-                popupDateBtn.setText(date);
+                newDateBtn.setText(date);
             }
         };
 
@@ -386,10 +459,12 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         String moreDetails = task.getMoreDetails();
         String tag = task.getTag();
         String date = task.getDate();
+        String expDur = task.getExpDur();
+        String priority = task.getPriority();
 
 
         if (TextUtils.isEmpty(title)) {
-            popupTaskTitle.setError("Please Enter A Name For The Task!");
+            newTaskTitle.setError("Please Enter A Name For The Task!");
             return;
         }
         mAuth = FirebaseAuth.getInstance();
@@ -400,11 +475,22 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         } else {
 
             Map<String, Object> dbTask = new HashMap<>();
+            //INIT TASK ATTRIBUTES
             dbTask.put("title", title);
             dbTask.put("moreDetails", moreDetails);
             dbTask.put("tag", tag);
             dbTask.put("date", date);
+            dbTask.put("expDur", expDur);
+            dbTask.put("priority", priority);
+            //COMPLETED TASK ATTRIBUTES
+            dbTask.put("started", false);
             dbTask.put("completed", false);
+            dbTask.put("incomplete", false);
+            dbTask.put("actualDur", null);
+            dbTask.put("difficulty", null);
+            dbTask.put("startTime", null);
+            dbTask.put("finishTime", null);
+
 
             db.collection("users")
                     .document(mAuth.getCurrentUser().getUid())
@@ -414,18 +500,53 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             Toast.makeText(TasksPageActivity.this, "Successful", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
+                            createTaskDialog.dismiss();
                             tasks = getTasks(TasksPageActivity.this);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(TasksPageActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
+                            createTaskDialog.dismiss();
                             onResume();
                         }
                     });
         }
+    }
+
+
+//==================================================================================================
+    // Start Task
+//==================================================================================================
+
+    private void startTask(TaskObj task){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(TasksPageActivity.this, "Error! Signed Out, Please Log In", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(TasksPageActivity.this, LoginActivity.class);
+            startActivity(intent);
+        } else {
+            db.collection("users")
+                    .document(mAuth.getCurrentUser().getUid())
+                    .collection("tasks").document(task.getId()).update("started", true).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(TasksPageActivity.this, "Task Started!", Toast.LENGTH_SHORT).show();
+                            completeTaskDialog.dismiss();
+                            tasks = getTasks(TasksPageActivity.this);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(TasksPageActivity.this, "Task Start Failed", Toast.LENGTH_SHORT).show();
+                            completeTaskDialog.dismiss();
+                            onResume();
+                        }
+                    });
+
+        }
+
     }
 }
 
