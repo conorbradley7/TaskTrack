@@ -122,6 +122,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="30dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/cancelTaskPopup"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

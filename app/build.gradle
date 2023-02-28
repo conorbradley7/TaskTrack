@@ -51,4 +51,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-storage'
+
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation "me.relex:circleindicator:2.1.6"
+    implementation "com.github.AnyChart:AnyChart-Android:1.1.2"
 }

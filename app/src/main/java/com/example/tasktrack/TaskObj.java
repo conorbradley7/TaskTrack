@@ -12,7 +12,7 @@ public class TaskObj implements Serializable {
     private String startTime, finishTime, actualDur, difficulty, id;
 
 
-    public TaskObj(String id, String title, String moreDetails, String tag, String date, String expDur, String priority, Boolean started){
+    public TaskObj(String id, String title, String moreDetails, String tag, String date, String expDur, String priority, Boolean started, Boolean completed, Boolean incomplete, String difficulty){
         this.id = id;
         this.title = title;
         this.moreDetails = moreDetails;
@@ -22,12 +22,12 @@ public class TaskObj implements Serializable {
         this.priority = priority;
 
         this.started = started;
-        this.completed = false;
-        this.incomplete = false;
+        this.completed = completed;
+        this.incomplete = incomplete;
         this.startTime = null;
         this.finishTime = null;
         this.actualDur = null;
-        this.difficulty = null;
+        this.difficulty = difficulty;
     }
 
     public String getId() {

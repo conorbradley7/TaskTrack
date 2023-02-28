@@ -78,7 +78,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
         // takes in an integer pos marking the index of the list.
         // populates that list item with appropriate name, image and position of player
         holder.rowTitle.setText(taskTitlesList.get(pos));
-        holder.rowDate.setText(taskTagsList.get(pos));
+        holder.rowTag.setText(taskTagsList.get(pos));
 
     }
 
@@ -90,13 +90,13 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
         public TextView rowTitle;
-        public TextView rowDate;
+        public TextView rowTag;
 
 
         public ViewHolder(@NonNull View itemView, RecycleViewInterface recycleViewInterface) {
             super(itemView);
             rowTitle = itemView.findViewById(R.id.rowTitle);
-            rowDate = itemView.findViewById(R.id.rowTag);
+            rowTag = itemView.findViewById(R.id.rowTag);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

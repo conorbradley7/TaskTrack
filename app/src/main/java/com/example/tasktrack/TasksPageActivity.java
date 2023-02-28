@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -43,18 +42,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.time.LocalDate;
 
-
-import static com.example.tasktrack.CalendarUtils.daysInMonthArray;
 import static com.example.tasktrack.CalendarUtils.daysInWeekArray;
 import static com.example.tasktrack.CalendarUtils.monthYearFromDate;
 
 
-
-
 public class TasksPageActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener, RecycleViewInterface{
-    private Button logOut, newTask, newAddTaskBtn, newBackBtn, newDateBtn, prevWeekBtn, nextWeekBtn;
+    private Button logOut, newTask, home, newAddTaskBtn, newBackBtn, newDateBtn, prevWeekBtn, nextWeekBtn;
     private RecyclerView recycleView = null;
     private DataAdapter adapter;
     private ArrayList<TaskObj> tasks = null;
@@ -70,7 +64,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 
     //New Task
     private AlertDialog.Builder createTaskDialogBuilder, completeTaskDialogBuilder;
-    private AlertDialog createTaskDialog, completeTaskDialog;
+    private AlertDialog createTaskDialog, startCompleteTaskDialog;
     private DatePickerDialog datePickerDialog;
     private EditText newTaskTitle, newTaskMoreDetails, newTaskExpDur, newTaskPriority;
     private Spinner newTaskTag;
@@ -100,6 +94,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         //wire widgets
         logOut = findViewById(R.id.logOutBtn);
         newTask = findViewById(R.id.newTaskBtn);
+        home = findViewById(R.id.homeBtn);
         recycleView = findViewById(R.id.recycleView);
         recycleView.setLayoutManager(new LinearLayoutManager(this));
         recycleView.setItemAnimator(new DefaultItemAnimator());
@@ -131,6 +126,17 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                 public void onClick(View view) {
                     DBUtilities.signOut();
                     Intent intent = new Intent(TasksPageActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            home.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Bundle bundle = new Bundle();
+                    Intent intent = new Intent(TasksPageActivity.this, LandingPageActivity.class);
+                    bundle.putSerializable("user", user);
+                    intent.putExtras(bundle);
                     startActivity(intent);
                 }
             });
@@ -200,6 +206,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         db.collection("users")
                 .document(mAuth.getCurrentUser().getUid())
                 .collection("tasks").whereEqualTo("date", date)
+                .whereEqualTo("completed", false).whereEqualTo("incomplete", false)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -215,8 +222,12 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                                 String taskExpDur = (document.getString("expDur"));
                                 String taskPriority = (document.getString("priority"));
                                 Boolean taskStarted = (document.getBoolean("started"));
+                                Boolean taskCompleted = (document.getBoolean("completed"));
+                                Boolean taskIncomplete = (document.getBoolean("incomplete"));
+                                String taskDifficulty = (document.getString("difficulty"));
+
                                 String id = (document.getId());
-                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails, taskTag, taskDate, taskExpDur, taskPriority, taskStarted);
+                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails, taskTag, taskDate, taskExpDur, taskPriority, taskStarted, taskCompleted, taskIncomplete, taskDifficulty);
                                 tasks.add(taskObj);
                                 System.out.println("first");
                             }
@@ -228,7 +239,8 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
     }
 
     @Override
-    public void onTaskItemClick(int pos) {completeTaskDialog(pos);}
+    public void onTaskItemClick(int pos) {
+        startCompleteTaskDialog(pos);}
 
     @Override
     protected void onResume() {
@@ -287,9 +299,8 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                 String tag = newTaskTag.getSelectedItem().toString().trim();
                 String expDur = newTaskExpDur.getText().toString().trim();
                 String priority = newTaskPriority.getText().toString().trim();
-                String id = "";
 
-                TaskObj task = new TaskObj(id, title, moreDetails, tag, date, expDur, priority, false);
+                TaskObj task = new TaskObj("", title, moreDetails, tag, date, expDur, priority, false, false, true, null);
                 createTask(task);
             }
         });
@@ -312,54 +323,6 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         initDatePicker();
     }
 
-//==================================================================================================
-    // Task Details Popup
-//==================================================================================================
-    public void completeTaskDialog(int pos){
-        completeTaskDialogBuilder = new AlertDialog.Builder(this);
-        final View completeTaskPopupView = getLayoutInflater().inflate(R.layout.complete_task_popup, null);
-
-        completeTaskDialogBuilder.setView(completeTaskPopupView);
-        completeTaskDialog = completeTaskDialogBuilder.create();
-        TaskObj task = tasks.get(pos);
-
-
-
-        startCompleteTaskTitle = completeTaskPopupView.findViewById(R.id.completePopupTaskTitle);
-        startCompleteTaskDetails = completeTaskPopupView.findViewById(R.id.completePopupTaskDetails);
-        startCompleteBackBtn = completeTaskPopupView.findViewById(R.id.cancelTaskPopup);
-
-        //Start Task Elements
-        startTaskBtn = completeTaskPopupView.findViewById(R.id.startTaskBtn);
-        startTaskLayout = completeTaskPopupView.findViewById(R.id.startTaskLayout);
-
-        //Complete Task Elements
-        completeTaskDuration = completeTaskPopupView.findViewById(R.id.taskActualDurationEditText);
-        completeTaskDifficulty = completeTaskPopupView.findViewById(R.id.taskDiifficultyEditText);
-        completeTaskBtn = completeTaskPopupView.findViewById(R.id.completeTask);
-        incompleteTaskBtn = completeTaskPopupView.findViewById(R.id.incompleteTask);
-        completeTaskLayout = completeTaskPopupView.findViewById(R.id.completeTaskLayout);
-        completeTaskDialog.show();
-
-        startCompleteTaskTitle.setText(task.getTitle());
-        startCompleteTaskDetails.setText(task.getMoreDetails());
-
-        if (task.getStarted() == true){
-            startTaskLayout.setVisibility(View.GONE);
-            completeTaskLayout.setVisibility(View.VISIBLE);
-        }
-
-        startTaskBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startTask(task);
-            }
-        });
-
-
-
-    }
-    
 //==============================================================================================
     //DATE PICKER
 //==============================================================================================
@@ -514,6 +477,69 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         }
     }
 
+//==================================================================================================
+    // Task Start/Complete Popup
+//==================================================================================================
+    public void startCompleteTaskDialog(int pos){
+        completeTaskDialogBuilder = new AlertDialog.Builder(this);
+        final View completeTaskPopupView = getLayoutInflater().inflate(R.layout.complete_task_popup, null);
+
+        completeTaskDialogBuilder.setView(completeTaskPopupView);
+        startCompleteTaskDialog = completeTaskDialogBuilder.create();
+        TaskObj task = tasks.get(pos);
+
+
+
+        startCompleteTaskTitle = completeTaskPopupView.findViewById(R.id.completePopupTaskTitle);
+        startCompleteTaskDetails = completeTaskPopupView.findViewById(R.id.completePopupTaskDetails);
+        startCompleteBackBtn = completeTaskPopupView.findViewById(R.id.cancelTaskPopup);
+
+        //Start Task Elements
+        startTaskBtn = completeTaskPopupView.findViewById(R.id.startTaskBtn);
+        startTaskLayout = completeTaskPopupView.findViewById(R.id.startTaskLayout);
+
+        //Complete Task Elements
+        completeTaskDuration = completeTaskPopupView.findViewById(R.id.taskActualDurationEditText);
+        completeTaskDifficulty = completeTaskPopupView.findViewById(R.id.taskDiifficultyEditText);
+        completeTaskBtn = completeTaskPopupView.findViewById(R.id.completeTask);
+        incompleteTaskBtn = completeTaskPopupView.findViewById(R.id.incompleteTask);
+        completeTaskLayout = completeTaskPopupView.findViewById(R.id.completeTaskLayout);
+        startCompleteTaskDialog.show();
+
+        startCompleteTaskTitle.setText(task.getTitle());
+        startCompleteTaskDetails.setText(task.getMoreDetails());
+
+        if (task.getStarted() == true){
+            startTaskLayout.setVisibility(View.GONE);
+            completeTaskLayout.setVisibility(View.VISIBLE);
+        }
+
+        startCompleteBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startCompleteTaskDialog.dismiss();
+            }
+        });
+
+        startTaskBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startTask(task);
+            }
+        });
+
+        completeTaskBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {completeTask(task, true);}
+        });
+
+        incompleteTaskBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {completeTask(task, false);}
+        });
+
+    }
+
 
 //==================================================================================================
     // Start Task
@@ -533,20 +559,79 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                         @Override
                         public void onSuccess(Void unused) {
                             Toast.makeText(TasksPageActivity.this, "Task Started!", Toast.LENGTH_SHORT).show();
-                            completeTaskDialog.dismiss();
+                            startCompleteTaskDialog.dismiss();
                             tasks = getTasks(TasksPageActivity.this);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(TasksPageActivity.this, "Task Start Failed", Toast.LENGTH_SHORT).show();
-                            completeTaskDialog.dismiss();
+                            startCompleteTaskDialog.dismiss();
                             onResume();
                         }
                     });
 
         }
 
+    }
+
+//==================================================================================================
+    // Complete/(Incomplete) Task
+//==================================================================================================
+    private void completeTask(TaskObj task, Boolean complete){
+        String actualDur = completeTaskDuration.getText().toString().trim();
+        String difficulty = completeTaskDifficulty.getText().toString().trim();
+
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(TasksPageActivity.this, "Error! Signed Out, Please Log In", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(TasksPageActivity.this, LoginActivity.class);
+            startActivity(intent);
+        } else {
+            if (complete) {
+                db.collection("users")
+                        .document(mAuth.getCurrentUser().getUid())
+                        .collection("tasks").document(task.getId()).update("completed", true, "actualDur", actualDur, "difficulty", difficulty)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(TasksPageActivity.this, "Task Started!", Toast.LENGTH_SHORT).show();
+                                startCompleteTaskDialog.dismiss();
+                                tasks = getTasks(TasksPageActivity.this);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(TasksPageActivity.this, "Task Start Failed", Toast.LENGTH_SHORT).show();
+                                startCompleteTaskDialog.dismiss();
+                                onResume();
+                            }
+                        });
+            }
+            else{
+                db.collection("users")
+                        .document(mAuth.getCurrentUser().getUid())
+                        .collection("tasks").document(task.getId()).update("incomplete", true)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(TasksPageActivity.this, "Task Started!", Toast.LENGTH_SHORT).show();
+                                startCompleteTaskDialog.dismiss();
+                                tasks = getTasks(TasksPageActivity.this);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(TasksPageActivity.this, "Task Start Failed", Toast.LENGTH_SHORT).show();
+                                startCompleteTaskDialog.dismiss();
+                                onResume();
+                            }
+                        });
+            }
+
+        }
     }
 }
 

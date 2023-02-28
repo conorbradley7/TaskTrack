@@ -1,0 +1,165 @@
+package com.example.tasktrack;
+
+import androidx.annotation.NonNull;
+
+import com.anychart.AnyChart;
+import com.anychart.chart.common.dataentry.DataEntry;
+import com.anychart.chart.common.dataentry.ValueDataEntry;
+import com.anychart.charts.Cartesian;
+import com.anychart.charts.Pie;
+import com.anychart.core.cartesian.series.Column;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+
+public class Stats {
+    public List<DataEntry> completeVsIncompleteData, tagsData, difficultyData, onTimeData;
+
+    public Stats (ArrayList<TaskObj> tasks){
+        this.completeVsIncompleteData = genCompleteVsIncompletePie(tasks);
+        this.tagsData = genTagsPie(tasks);
+        this.difficultyData = genDifficultyBarChart(tasks);
+        this.onTimeData = genOnTimeData(tasks);
+    }
+
+    public List<DataEntry> genCompleteVsIncompletePie(@NonNull ArrayList<TaskObj> tasks){
+        int compTotal = 0, incompTotal = 0;
+        for (int i=0; i<tasks.size(); i++){
+            if (tasks.get(i).getCompleted()){
+                compTotal += 1;
+            }
+            else{
+                incompTotal += 1;
+            }
+        }
+        List<DataEntry> data = new ArrayList<>();
+        data.add(new ValueDataEntry("Completed", compTotal));
+        data.add(new ValueDataEntry("Incomplete", incompTotal));
+        return data;
+    }
+
+    public List<DataEntry> genTagsPie(@NonNull ArrayList<TaskObj> tasks){
+        int schoolTotal = 1, personalTotal= 1, workTotal = 1;
+        for (int i=0; i<tasks.size(); i++){
+            if (Objects.equals(tasks.get(i).getTag(), "School")){
+                schoolTotal += 1;
+            }
+            if (Objects.equals(tasks.get(i).getTag(), "Personal")){
+                personalTotal += 1;
+            }
+            if (Objects.equals(tasks.get(i).getTag(), "Work")){
+                workTotal += 1;
+            }
+        }
+        List<DataEntry> data = new ArrayList<>();
+        data.add(new ValueDataEntry("School", schoolTotal));
+        data.add(new ValueDataEntry("Personal", personalTotal));
+        data.add(new ValueDataEntry("Work", workTotal));
+
+        return data;
+    }
+
+    public List<DataEntry> genDifficultyBarChart(ArrayList<TaskObj> tasks){
+        int dif1=1,dif2=1,dif3=0,dif4=0,dif5=0,dif6=0,dif7=0,dif8=0,dif9=0,dif10=0;
+        for (int i = 0; i<tasks.size(); i++) {
+            if (tasks.get(i).getDifficulty() != null){
+                switch (tasks.get(i).getDifficulty()){
+                    case "1":
+                        dif1 += 1;
+                        break;
+                    case "2":
+                        dif2 += 1;
+                        break;
+                    case "3":
+                        dif3 += 1;
+                        break;
+                    case "4":
+                        dif4 += 1;
+                        break;
+                    case "5":
+                        dif5 += 1;
+                        break;
+                    case "6":
+                        dif6 += 1;
+                        break;
+                    case "7":
+                        dif7 += 1;
+                        break;
+                    case "8":
+                        dif8 += 1;
+                        break;
+                    case "9":
+                        dif9 += 1;
+                        break;
+                    case "10":
+                        dif10 += 1;
+                        break;
+                }
+            }}
+
+        List<DataEntry> data = new ArrayList<>();
+        data.add(new ValueDataEntry("1", dif1));
+        data.add(new ValueDataEntry("2", dif2));
+        data.add(new ValueDataEntry("3", dif3));
+        data.add(new ValueDataEntry("4", dif4));
+        data.add(new ValueDataEntry("5", dif5));
+        data.add(new ValueDataEntry("6", dif6));
+        data.add(new ValueDataEntry("7", dif7));
+        data.add(new ValueDataEntry("8", dif8));
+        data.add(new ValueDataEntry("9", dif9));
+        data.add(new ValueDataEntry("10", dif10));
+
+
+        return data;
+    }
+
+    public List<DataEntry> genOnTimeData(ArrayList<TaskObj> tasks){
+        int onTime=0, overTime=0;
+        for (int i = 0; i<tasks.size(); i++) {
+            onTime+=2;
+            overTime+=1;
+        }
+
+        List<DataEntry> data = new ArrayList<>();
+        data.add(new ValueDataEntry("On Time", onTime));
+        data.add(new ValueDataEntry("Over Time", overTime));
+
+        return data;
+    }
+
+
+    public List<DataEntry> getCompleteVsIncompleteData() {
+        return completeVsIncompleteData;
+    }
+
+    public void setCompleteVsIncompleteData(List<DataEntry> completeVsIncompleteData) {
+        this.completeVsIncompleteData = completeVsIncompleteData;
+    }
+
+    public List<DataEntry> getTagsData() {
+        return tagsData;
+    }
+
+    public void setTagsData(List<DataEntry> tagsData) {
+        this.tagsData = tagsData;
+    }
+
+    public List<DataEntry> getDifficultyData() {
+        return difficultyData;
+    }
+
+    public void setDifficultyData(List<DataEntry> difficultyData) {
+        this.difficultyData = difficultyData;
+    }
+
+    public List<DataEntry> getOnTimeData() {
+        return onTimeData;
+    }
+
+    public void setOnTimeData(List<DataEntry> onTimeData) {
+        this.onTimeData = onTimeData;
+    }
+}
+
