@@ -2,10 +2,13 @@ package com.example.tasktrack;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CalendarUtils {
 
@@ -15,8 +18,8 @@ public class CalendarUtils {
         return date.format(formatter);
     }
 
-    public static String formattedTime(LocalTime time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+    public static String formattedTime(LocalDateTime time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd yyyy hh:mm:ss");
         return time.format(formatter);
     }
 
@@ -63,5 +66,11 @@ public class CalendarUtils {
             current = current.minusDays(1);
         }
         return null;
+    }
+
+    public static LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 }

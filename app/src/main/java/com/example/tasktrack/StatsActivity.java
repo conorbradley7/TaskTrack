@@ -21,11 +21,13 @@ import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Pie;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +43,8 @@ enum graphs{
     completeVsIncompletePie,
     tagsPie,
     difficultyBar,
-    onTimePie
+    onTimePie,
+    onTimeScatterPlot
 }
 
 public class StatsActivity extends AppCompatActivity implements RecycleViewInterface{
@@ -108,8 +111,13 @@ public class StatsActivity extends AppCompatActivity implements RecycleViewInter
                                 Boolean taskCompleted = (document.getBoolean("completed"));
                                 Boolean taskIncomplete = (document.getBoolean("incomplete"));
                                 String taskDifficulty = (document.getString("difficulty"));
+                                String actualDur = (document.getString("actualDur"));
                                 String id = (document.getId());
-                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails, taskTag, taskDate, taskExpDur, taskPriority, taskStarted, taskCompleted, taskIncomplete, taskDifficulty);
+
+                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails,
+                                        taskTag, taskDate, taskExpDur, taskPriority, taskStarted,
+                                        taskCompleted, taskIncomplete, taskDifficulty, null,
+                                        null, actualDur);
                                 tasks.add(taskObj);
                             }
                             onResume();
@@ -125,10 +133,10 @@ public class StatsActivity extends AppCompatActivity implements RecycleViewInter
         System.out.println("===========RESUMING_STATS=============");
         Stats stats = new Stats(tasks);
         ArrayList<sectionTypes> sections = new ArrayList<>();
+        sections.add(sectionTypes.taskTime);
         sections.add(sectionTypes.taskCompletion);
         sections.add(sectionTypes.taskTags);
         sections.add(sectionTypes.taskDifficulty);
-        sections.add(sectionTypes.taskTime);
         System.out.println("HERE");
         adapter = new StatsSectionAdapter(this, R.layout.stat_section, tasks, sections, stats,this);
         statSections.setAdapter(adapter);

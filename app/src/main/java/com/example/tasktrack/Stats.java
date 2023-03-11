@@ -9,19 +9,25 @@ import com.anychart.charts.Cartesian;
 import com.anychart.charts.Pie;
 import com.anychart.core.cartesian.series.Column;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 
 public class Stats {
-    public List<DataEntry> completeVsIncompleteData, tagsData, difficultyData, onTimeData;
+    public List<DataEntry> completeVsIncompleteData, tagsData, difficultyData, onTimeData, onTimeScatterPoints, onTimeScatterLine;
 
     public Stats (ArrayList<TaskObj> tasks){
         this.completeVsIncompleteData = genCompleteVsIncompletePie(tasks);
         this.tagsData = genTagsPie(tasks);
         this.difficultyData = genDifficultyBarChart(tasks);
         this.onTimeData = genOnTimeData(tasks);
+        this.onTimeScatterPoints = genOnTimeScatterPoints(tasks);
+        this.onTimeScatterLine = genOnTimeScatterLine(tasks);
+
     }
 
     public List<DataEntry> genCompleteVsIncompletePie(@NonNull ArrayList<TaskObj> tasks){
@@ -41,7 +47,7 @@ public class Stats {
     }
 
     public List<DataEntry> genTagsPie(@NonNull ArrayList<TaskObj> tasks){
-        int schoolTotal = 1, personalTotal= 1, workTotal = 1;
+        int schoolTotal = 0, personalTotal= 0, workTotal = 0;
         for (int i=0; i<tasks.size(); i++){
             if (Objects.equals(tasks.get(i).getTag(), "School")){
                 schoolTotal += 1;
@@ -116,15 +122,63 @@ public class Stats {
     }
 
     public List<DataEntry> genOnTimeData(ArrayList<TaskObj> tasks){
-        int onTime=0, overTime=0;
+        int onTime=0, overTime=0, underTime=0;
         for (int i = 0; i<tasks.size(); i++) {
-            onTime+=2;
-            overTime+=1;
+            if(tasks.get(i).getActualDur() != "" && tasks.get(i).getExpDur() != "" &&
+                    tasks.get(i).getActualDur() != null && tasks.get(i).getExpDur() != null){
+                if (Integer.parseInt(tasks.get(i).getExpDur()) > Integer.parseInt(tasks.get(i).getActualDur())){
+                underTime += 1;
+                }
+                else if (Integer.parseInt(tasks.get(i).getExpDur()) < Integer.parseInt(tasks.get(i).getActualDur())){
+                    overTime += 1;
+                }
+                else{onTime+=1;}
+            }
         }
 
         List<DataEntry> data = new ArrayList<>();
         data.add(new ValueDataEntry("On Time", onTime));
         data.add(new ValueDataEntry("Over Time", overTime));
+        data.add(new ValueDataEntry("Under Time", underTime));
+
+        return data;
+    }
+
+    public List<DataEntry> genOnTimeScatterPoints(ArrayList<TaskObj> tasks){
+        List<DataEntry> data = new ArrayList<>();
+        for (int i = 0; i<tasks.size(); i++) {
+            if(tasks.get(i).getActualDur() != "" && tasks.get(i).getExpDur() != "" &&
+                    tasks.get(i).getActualDur() != null && tasks.get(i).getExpDur() != null){
+                data.add(new ValueDataEntry(Integer.parseInt(tasks.get(i).getExpDur()),Integer.parseInt(tasks.get(i).getActualDur())));
+            }
+        }
+        return data;
+    }
+
+    public List<DataEntry> genOnTimeScatterLine(ArrayList<TaskObj> tasks){
+        List<DataEntry> data = new ArrayList<>();
+        ArrayList<Integer> exp=new ArrayList<>(), act = new ArrayList<>();
+        for (int i=0; i<tasks.size(); i++) {
+            if (tasks.get(i).getActualDur() != "" && tasks.get(i).getExpDur() != "" &&
+                    tasks.get(i).getActualDur() != null && tasks.get(i).getExpDur() != null) {
+                exp.add(Integer.parseInt(tasks.get(i).getExpDur()));
+                act.add(Integer.parseInt(tasks.get(i).getActualDur()));
+            }
+        }
+        if(exp.size()>0) {
+            int maxExp = Collections.max(exp);
+            int maxAct = Collections.max(act);
+
+            int maxLine;
+            if (maxExp > maxAct) {
+                maxLine = maxExp + 1;
+            } else {
+                maxLine = maxAct + 1;
+            }
+
+            data.add(new ValueDataEntry(0, 0));
+            data.add(new ValueDataEntry(maxLine, maxLine));
+        }
 
         return data;
     }
@@ -161,5 +215,23 @@ public class Stats {
     public void setOnTimeData(List<DataEntry> onTimeData) {
         this.onTimeData = onTimeData;
     }
+
+    public void setOnTimeScatterPoints(List<DataEntry> onTimeData) {
+        this.onTimeScatterPoints = onTimeData;
+    }
+
+    public List<DataEntry> getOnTimeScatterPoints() {
+        return onTimeScatterPoints;
+    }
+
+
+    public List<DataEntry> getOnTimeScatterLine() {
+        return onTimeScatterLine;
+    }
+
+    public void setOnTimeScatterLine(List<DataEntry> onTimeData) {
+        this.onTimeScatterLine = onTimeScatterLine;
+    }
 }
+
 

@@ -56,7 +56,6 @@ public class StatsSectionAdapter extends RecyclerView.Adapter<StatsSectionAdapte
                 titles = new ArrayList<>();
                 titles.add(graphs.completeVsIncompletePie);
                 titles.add(graphs.tagsPie);
-                titles.add(graphs.difficultyBar);
                 adapter = new StatsViewPageAdapter(context, R.layout.graph_views, titles, tasks, stats,recycleViewInterface);
                 holder.sectionHeading.setText("Completion Stats");
                 break;
@@ -75,6 +74,7 @@ public class StatsSectionAdapter extends RecyclerView.Adapter<StatsSectionAdapte
                 break;
             case taskTime:
                 titles = new ArrayList<>();
+                titles.add(graphs.onTimeScatterPlot);
                 titles.add(graphs.onTimePie);
                 adapter = new StatsViewPageAdapter(context, R.layout.graph_views, titles, tasks, stats,recycleViewInterface);
                 holder.sectionHeading.setText("Timing Stats");
