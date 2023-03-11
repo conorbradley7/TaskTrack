@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,13 +33,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -48,10 +56,11 @@ import static com.example.tasktrack.CalendarUtils.monthYearFromDate;
 
 
 public class TasksPageActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener, RecycleViewInterface{
-    private Button logOut, newTask, home, newAddTaskBtn, newBackBtn, newDateBtn, prevWeekBtn, nextWeekBtn;
-    private RecyclerView recycleView = null;
-    private DataAdapter adapter;
-    private ArrayList<TaskObj> tasks = null;
+    private Button  newTask, home, newAddTaskBtn, newBackBtn, newDateBtn;
+    private ImageButton prevWeekBtn,nextWeekBtn;
+    private ViewPager2 recycleView = null;
+    private TaskSectionAdapter adapter;
+    private ArrayList<TaskObj> tasks, completedTasks, incompleteTasks, todoTasks;
 
     //DB
     private static FirebaseAuth mAuth;
@@ -76,6 +85,11 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
     private ConstraintLayout completeTaskLayout, startTaskLayout;
 
 
+    enum taskSectionTypes{
+        complete,
+        incomplete,
+        todo
+    }
 //==================================================================================================
     // OnCreate
     // => Check Logged In
@@ -92,12 +106,11 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         setContentView(R.layout.activity_tasks_page);
 
         //wire widgets
-        logOut = findViewById(R.id.logOutBtn);
         newTask = findViewById(R.id.newTaskBtn);
         home = findViewById(R.id.homeBtn);
-        recycleView = findViewById(R.id.recycleView);
-        recycleView.setLayoutManager(new LinearLayoutManager(this));
-        recycleView.setItemAnimator(new DefaultItemAnimator());
+        recycleView = findViewById(R.id.taskSections);
+//        recycleView.setLayoutManager(new LinearLayoutManager(this));
+//        recycleView.setItemAnimator(new DefaultItemAnimator());
 
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
         monthYearText = findViewById(R.id.monthYearTV);
@@ -120,15 +133,6 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
             CalendarUtils.selectedDate = LocalDate.now();
             setWeekView();
             tasks = getTasks(this);
-
-            logOut.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    DBUtilities.signOut();
-                    Intent intent = new Intent(TasksPageActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-            });
 
             home.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -206,7 +210,6 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         db.collection("users")
                 .document(mAuth.getCurrentUser().getUid())
                 .collection("tasks").whereEqualTo("date", date)
-                .whereEqualTo("completed", false).whereEqualTo("incomplete", false)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -225,11 +228,15 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                                 Boolean taskCompleted = (document.getBoolean("completed"));
                                 Boolean taskIncomplete = (document.getBoolean("incomplete"));
                                 String taskDifficulty = (document.getString("difficulty"));
-
+                                String actualDur = (document.getString("actualDur"));
                                 String id = (document.getId());
-                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails, taskTag, taskDate, taskExpDur, taskPriority, taskStarted, taskCompleted, taskIncomplete, taskDifficulty);
+
+
+                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails,
+                                        taskTag, taskDate, taskExpDur, taskPriority, taskStarted,
+                                        taskCompleted, taskIncomplete, taskDifficulty,null,
+                                        null, actualDur);
                                 tasks.add(taskObj);
-                                System.out.println("first");
                             }
                             onResume();
                         }
@@ -246,10 +253,33 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
     protected void onResume() {
         super.onResume();
         System.out.println("===========RESUMING=============");
+        filterTasksByCompletion(tasks);
         // make the adapter and set it to recycleView from received tasks
-        adapter = new DataAdapter(this, R.layout.row_layout, tasks, this);
+        ArrayList<taskSectionTypes> sections = new ArrayList<>();
+        sections.add(taskSectionTypes.todo);
+        sections.add(taskSectionTypes.complete);
+        sections.add(taskSectionTypes.incomplete);
+        if(todoTasks.size()>0){System.out.println(todoTasks.get(0).getTitle());}
+        System.out.println(completedTasks);
+        System.out.println(incompleteTasks);
+        adapter = new TaskSectionAdapter(this, R.layout.task_section_layout, tasks, incompleteTasks, completedTasks, todoTasks, sections, this);
         recycleView.setAdapter(adapter);
         setWeekView();
+    }
+
+    public void filterTasksByCompletion(ArrayList<TaskObj> tasks){
+        completedTasks = new ArrayList<>(); todoTasks = new ArrayList<>(); incompleteTasks = new ArrayList<>();
+        for (int i = 0; i<tasks.size(); i++){
+            if (tasks.get(i).getCompleted() == true){
+                completedTasks.add(tasks.get(i));
+            }
+            else if(tasks.get(i).getIncomplete() == true){
+                incompleteTasks.add(tasks.get(i));
+            }
+            else{
+                todoTasks.add(tasks.get(i));
+            }
+        }
     }
 
 //==================================================================================================
@@ -300,7 +330,9 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                 String expDur = newTaskExpDur.getText().toString().trim();
                 String priority = newTaskPriority.getText().toString().trim();
 
-                TaskObj task = new TaskObj("", title, moreDetails, tag, date, expDur, priority, false, false, true, null);
+                TaskObj task = new TaskObj("", title, moreDetails, tag, date, expDur, priority,
+                        false, false, true, null, null,
+                        null, null);
                 createTask(task);
             }
         });
@@ -486,8 +518,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 
         completeTaskDialogBuilder.setView(completeTaskPopupView);
         startCompleteTaskDialog = completeTaskDialogBuilder.create();
-        TaskObj task = tasks.get(pos);
-
+        TaskObj task = todoTasks.get(pos);
 
 
         startCompleteTaskTitle = completeTaskPopupView.findViewById(R.id.completePopupTaskTitle);
@@ -546,6 +577,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 //==================================================================================================
 
     private void startTask(TaskObj task){
+        Timestamp currTime = Timestamp.now();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() == null) {
@@ -576,12 +608,12 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
     }
 
 //==================================================================================================
-    // Complete/(Incomplete) Task
+    // Complete Task
 //==================================================================================================
     private void completeTask(TaskObj task, Boolean complete){
         String actualDur = completeTaskDuration.getText().toString().trim();
         String difficulty = completeTaskDifficulty.getText().toString().trim();
-
+        Timestamp currTime = Timestamp.now();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -633,6 +665,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 
         }
     }
+
 }
 
 

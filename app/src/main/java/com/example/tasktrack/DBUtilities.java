@@ -56,16 +56,15 @@ public class DBUtilities {
 
 //==================================================================================================
 // Gets User's tasks
-
-//    public static ArrayList<String> getTasks(Context context){
+//
+//    public static ArrayList<String> resetTasks(Context context){
 //        db = FirebaseFirestore.getInstance();
 //        System.out.println("=========="+mAuth.getCurrentUser().getUid());
 //        ArrayList<String> tasks = new ArrayList<String>();
 //
 //        db.collection("users")
 //                .document(mAuth.getCurrentUser().getUid())
-//                .collection("tasks")
-//                .get()
+//                .collection("tasks").whereNotEqualTo("startTime", null).get()
 //                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 //                    @Override
 //                    public void onComplete(@NonNull Task<QuerySnapshot> task) {

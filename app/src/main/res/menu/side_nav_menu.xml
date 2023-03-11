@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/sideNavProfile"
+        android:title="Profile" />
+    <item
+        android:id="@+id/sideNavTags"
+        android:title="Tags" />
+    <item android:title="Others">
+        <menu>
+            <item
+                android:id="@+id/sideNavAbout"
+                android:title="About" />
+        </menu>
+    </item>
+
+</menu>

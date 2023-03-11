@@ -2,12 +2,19 @@ package com.example.tasktrack;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,13 +25,17 @@ import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Pie;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +44,15 @@ public class LandingPageActivity extends AppCompatActivity {
     private User user;
     private ArrayList<TaskObj> todaysTasks;
 
-    private TextView welcomeMessage, landingNoTasksMsg;
-    private Button taskPageBtn, statsPageBtn;
+    private ImageView sideDrawerImg;
+
+    private TextView welcomeMessage, landingNoTasksMsg, sideNavName;
+    private Button taskPageBtn, logOut;
+    private ImageButton statsPageBtn;
     private AnyChartView anyChart;
+
+    private NavigationView sideNav;
+    private View sideNavHeader;
 
     //DB
     private static FirebaseAuth mAuth;
@@ -54,6 +71,12 @@ public class LandingPageActivity extends AppCompatActivity {
         taskPageBtn = findViewById(R.id.tasksBtn);
         statsPageBtn = findViewById(R.id.statsBtn);
         anyChart = findViewById(R.id.any_chart_view);
+        final DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
+        sideNav = findViewById(R.id.sideNavigation);
+        logOut = sideNav.findViewById(R.id.logOutBtn);
+        sideNavHeader = sideNav.getHeaderView(0);
+        sideNavName = sideNavHeader.findViewById(R.id.sideNavName);
+        sideDrawerImg = findViewById(R.id.side_drawer_img);
 
         Pie pie = AnyChart.pie();
         List<DataEntry> data = new ArrayList<>();
@@ -92,6 +115,27 @@ public class LandingPageActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
+
+            sideDrawerImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
+            });
+
+            logOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DBUtilities.signOut();
+                    Intent intent = new Intent(LandingPageActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            sideNav.setItemIconTintList(null);
+            NavController navController = Navigation.findNavController(this, R.id.navHostFragment);
+            NavigationUI.setupWithNavController(sideNav, navController);
+
         }
 
     }
@@ -103,6 +147,7 @@ public class LandingPageActivity extends AppCompatActivity {
         if (user != null){
             String name = user.getName();
             welcomeMessage.setText("Welcome Back " + name + "!");
+            sideNavName.setText(name);
         }
         if (todaysTasks.size() != 0){
             landingNoTasksMsg.setVisibility(View.GONE);
@@ -169,7 +214,11 @@ public class LandingPageActivity extends AppCompatActivity {
                                 Boolean taskIncomplete = (document.getBoolean("incomplete"));
                                 String taskDifficulty = (document.getString("difficulty"));
                                 String id = (document.getId());
-                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails, taskTag, taskDate, taskExpDur, taskPriority, taskStarted, taskCompleted, taskIncomplete, taskDifficulty);
+
+                                TaskObj taskObj = new TaskObj(id, taskTitle, taskMoreDetails,
+                                        taskTag, taskDate, taskExpDur, taskPriority, taskStarted,
+                                        taskCompleted, taskIncomplete, taskDifficulty, null,
+                                        null, null);
                                 todaysTasks.add(taskObj);
                             }
                             onResume();

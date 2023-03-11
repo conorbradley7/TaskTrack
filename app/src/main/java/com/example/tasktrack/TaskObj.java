@@ -1,6 +1,8 @@
 package com.example.tasktrack;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TaskObj implements Serializable {
 
@@ -9,10 +11,14 @@ public class TaskObj implements Serializable {
 
     //On Completion Attributes... init => false/null
     private Boolean started, completed, incomplete;
-    private String startTime, finishTime, actualDur, difficulty, id;
+    private String actualDur, difficulty, id;
+    LocalDateTime startTime , finishTime;
 
 
-    public TaskObj(String id, String title, String moreDetails, String tag, String date, String expDur, String priority, Boolean started, Boolean completed, Boolean incomplete, String difficulty){
+    public TaskObj(String id, String title, String moreDetails, String tag, String date,
+                   String expDur, String priority, Boolean started, Boolean completed,
+                   Boolean incomplete, String difficulty, LocalDateTime startTime,
+                   LocalDateTime finishTime, String actualDur){
         this.id = id;
         this.title = title;
         this.moreDetails = moreDetails;
@@ -24,9 +30,9 @@ public class TaskObj implements Serializable {
         this.started = started;
         this.completed = completed;
         this.incomplete = incomplete;
-        this.startTime = null;
-        this.finishTime = null;
-        this.actualDur = null;
+        this.startTime = startTime;
+        this.finishTime = finishTime;
+        this.actualDur = actualDur;
         this.difficulty = difficulty;
     }
 
@@ -102,19 +108,19 @@ public class TaskObj implements Serializable {
         this.incomplete = incomplete;
     }
 
-    public String getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public String getFinishTime() {
+    public LocalDateTime getFinishTime() {
         return finishTime;
     }
 
-    public void setFinishTime(String finishTime) {
+    public void setFinishTime(LocalDateTime finishTime) {
         this.finishTime = finishTime;
     }
 

@@ -19,32 +19,40 @@
             android:id="@+id/dateSelector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:background="#1E838C"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="10dp">
+            android:paddingLeft="40dp"
+            android:paddingTop="20dp"
+            android:paddingRight="40dp"
+            android:paddingBottom="20dp">
 
-            <Button
+            <ImageButton
                 android:id="@+id/prevWeek"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:backgroundTint="@null"
-                android:text="Back" />
+                android:contentDescription="Prev Week"
+                android:src="@drawable/ic_baseline_arrow_circle_left_24" />
 
             <TextView
                 android:id="@+id/monthYearTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="Feb 2023"
-                android:textSize="24sp" />
+                android:fontFamily="@font/bebas_neue_regular"
+                android:gravity="center|center_vertical"
+                android:text="March 2023"
+                android:textColor="#EDE21C"
+                android:textSize="32sp" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/nextWeek"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Next" />
+                android:contentDescription="Next Week"
+                android:src="@drawable/ic_baseline_arrow_circle_right_24" />
         </LinearLayout>
 
         <LinearLayout
@@ -148,45 +156,43 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycleView"
-            android:layout_width="0dp"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/taskSections"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/newTaskBtn"
+            app:layout_constraintBottom_toTopOf="@+id/bottomNavLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        </androidx.viewpager2.widget.ViewPager2>
 
-        <Button
-            android:id="@+id/logOutBtn"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/bottomNavLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:backgroundTint="@color/blue"
-            android:text="Log Out"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycleView" />
-
-        <Button
-            android:id="@+id/homeBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/blue"
-            android:text="Home"
-            app:layout_constraintEnd_toStartOf="@+id/logOutBtn"
-            app:layout_constraintStart_toEndOf="@+id/newTaskBtn"
-            app:layout_constraintTop_toBottomOf="@+id/recycleView" />
-
-        <Button
-            android:id="@+id/newTaskBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:backgroundTint="@color/blue"
-            android:text="New Task"
+            android:gravity="center"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/homeBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:backgroundTint="@color/blue"
+                android:text="Home" />
+
+            <Button
+                android:id="@+id/newTaskBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:backgroundTint="@color/blue"
+                android:text="New Task" />
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
