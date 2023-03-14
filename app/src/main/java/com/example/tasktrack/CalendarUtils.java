@@ -8,6 +8,7 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class CalendarUtils {
@@ -72,5 +73,65 @@ public class CalendarUtils {
         return dateToConvert.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
+    }
+//==================================================================================================
+    //DATE PICKER
+//==================================================================================================
+    public static String getTodaysDate(){
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        month = month+1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        return makeDateString(day,month,year);
+    }
+
+    public static String makeDateString(int day, int month, int year){
+        String strDay;
+        if (day < 10){
+            strDay = "0" + Integer.toString(day);
+        }
+        else{strDay = Integer.toString(day);}
+        return getMonthFormat(month) + " " + strDay + " " + year;
+    };
+
+    public static String getMonthFormat(int month){
+        if (month == 1){
+            return "January";
+        }
+        if (month == 2){
+            return "February";
+        }
+        if (month == 3){
+            return "March";
+        }
+        if (month == 4){
+            return "April";
+        }
+        if (month == 5){
+            return "May";
+        }
+        if (month == 6){
+            return "June";
+        }
+        if (month == 7){
+            return "July";
+        }
+        if (month == 8){
+            return "August";
+        }
+        if (month == 9){
+            return "September";
+        }
+        if (month == 10){
+            return "October";
+        }
+        if (month == 11){
+            return "November";
+        }
+        if (month == 12){
+            return "December";
+        }
+        return "ERROR";
     }
 }

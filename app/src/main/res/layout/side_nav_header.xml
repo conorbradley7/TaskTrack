@@ -7,7 +7,7 @@
     android:padding="20dp">
 
     <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/sideNavProfilePic"
+        android:id="@+id/profileFragPic"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:scaleType="centerCrop"
@@ -20,10 +20,10 @@
         android:id="@+id/viewSupporter"
         android:layout_width="1dp"
         android:layout_height="1dp"
-        app:layout_constraintBottom_toBottomOf="@+id/sideNavProfilePic"
-        app:layout_constraintEnd_toEndOf="@+id/sideNavProfilePic"
-        app:layout_constraintStart_toStartOf="@+id/sideNavProfilePic"
-        app:layout_constraintTop_toTopOf="@+id/sideNavProfilePic"/>
+        app:layout_constraintBottom_toBottomOf="@+id/profileFragPic"
+        app:layout_constraintEnd_toEndOf="@+id/profileFragPic"
+        app:layout_constraintStart_toStartOf="@+id/profileFragPic"
+        app:layout_constraintTop_toTopOf="@+id/profileFragPic"/>
 
     <TextView
         android:id="@+id/sideNavName"
@@ -36,7 +36,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/viewSupporter"
-        app:layout_constraintStart_toEndOf="@+id/sideNavProfilePic"
+        app:layout_constraintStart_toEndOf="@+id/profileFragPic"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

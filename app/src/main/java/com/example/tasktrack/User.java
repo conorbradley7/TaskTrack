@@ -5,19 +5,27 @@ import java.util.ArrayList;
 
 public class User implements Serializable {
 
-    public String email, name, dob, gender;
+    public String email, name, dob, gender, bio;
     public ArrayList<String> tags;
     //TODO
     //profile pic
 
-    public User(String email, String name, String dob, String gender){
+    public User(String email, String name, String dob, String gender, String bio){
         this.email = email;
         this.name = name;
         this.dob = dob;
         this.gender = gender;
         this.tags = tags;
+        this.bio = bio;
     }
 
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
 
     public String getEmail() {
         return email;

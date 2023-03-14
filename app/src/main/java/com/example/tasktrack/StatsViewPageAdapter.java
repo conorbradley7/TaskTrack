@@ -11,18 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.anychart.AnyChart;
 import com.anychart.AnyChartView;
 import com.anychart.chart.common.dataentry.DataEntry;
-import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Cartesian;
 import com.anychart.charts.Pie;
 import com.anychart.charts.Scatter;
 import com.anychart.core.cartesian.series.Column;
 import com.anychart.core.scatter.series.Line;
 import com.anychart.core.scatter.series.Marker;
-import com.anychart.enums.Anchor;
 import com.anychart.enums.HoverMode;
 import com.anychart.enums.MarkerType;
-import com.anychart.enums.Position;
-import com.anychart.enums.TooltipPositionMode;
 import com.anychart.graphics.vector.SolidFill;
 import com.anychart.graphics.vector.text.HAlign;
 
@@ -30,7 +26,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class StatsViewPageAdapter extends RecyclerView.Adapter<StatsViewPageAdapter.ViewHolder> {
     private Context context;
@@ -148,7 +143,7 @@ public class StatsViewPageAdapter extends RecyclerView.Adapter<StatsViewPageAdap
         public ViewHolder(@androidx.annotation.NonNull View itemView, RecycleViewInterface recycleViewInterface) {
             super(itemView);
             pageGraphTitle = itemView.findViewById(R.id.graphTitle);
-            anyChartView = itemView.findViewById(R.id.any_chart_view);
+            anyChartView = itemView.findViewById(R.id.progressRingView);
 
         }
 

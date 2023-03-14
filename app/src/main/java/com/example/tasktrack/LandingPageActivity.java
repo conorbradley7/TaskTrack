@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
@@ -11,6 +14,7 @@ import androidx.navigation.ui.NavigationUI;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -41,22 +45,21 @@ import java.util.List;
 
 public class LandingPageActivity extends AppCompatActivity {
 
+    //User Data
     private User user;
     private ArrayList<TaskObj> todaysTasks;
 
+    //Layout
     private ImageView sideDrawerImg;
-
-    private TextView welcomeMessage, landingNoTasksMsg, sideNavName;
-    private Button taskPageBtn, logOut;
-    private ImageButton statsPageBtn;
-    private AnyChartView anyChart;
-
+    private TextView sideNavName;
+    private Button logOut;
     private NavigationView sideNav;
     private View sideNavHeader;
 
     //DB
     private static FirebaseAuth mAuth;
     private static FirebaseFirestore db;
+
 
 //==================================================================================================
     // OnCreate + OnResume
@@ -66,11 +69,6 @@ public class LandingPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing_page);
 
-        welcomeMessage = findViewById(R.id.welcomeMsg);
-        landingNoTasksMsg = findViewById(R.id.landingNoTasksMsg);
-        taskPageBtn = findViewById(R.id.tasksBtn);
-        statsPageBtn = findViewById(R.id.statsBtn);
-        anyChart = findViewById(R.id.any_chart_view);
         final DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
         sideNav = findViewById(R.id.sideNavigation);
         logOut = sideNav.findViewById(R.id.logOutBtn);
@@ -78,16 +76,14 @@ public class LandingPageActivity extends AppCompatActivity {
         sideNavName = sideNavHeader.findViewById(R.id.sideNavName);
         sideDrawerImg = findViewById(R.id.side_drawer_img);
 
-        Pie pie = AnyChart.pie();
-        List<DataEntry> data = new ArrayList<>();
-        data.add(new ValueDataEntry("Completed", 8));
-        data.add(new ValueDataEntry("Incomplete", 3));
-        pie.data(data);
-        anyChart.setChart(pie);
+        sideNav.setItemIconTintList(null);
+        NavController navController = Navigation.findNavController(this, R.id.navHostFragment);
+        NavigationUI.setupWithNavController(sideNav, navController);
 
-        //Get db instance
+
+
+        //Get db instance Check logged in
         mAuth = FirebaseAuth.getInstance();
-
         Boolean isLoggedIn = DBUtilities.checkLoggedIn();
         if (!isLoggedIn) {
             Toast.makeText(LandingPageActivity.this, "Error! Signed Out, Please Log In", Toast.LENGTH_SHORT).show();
@@ -96,25 +92,6 @@ public class LandingPageActivity extends AppCompatActivity {
         } else {
             user = getUserData(this);
             getTodaysTasks(this);
-            taskPageBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Bundle bundle = new Bundle();
-
-                    Intent intent = new Intent(LandingPageActivity.this, TasksPageActivity.class);
-                    bundle.putSerializable("user", user);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                }
-            });
-
-            statsPageBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(LandingPageActivity.this, StatsActivity.class);
-                    startActivity(intent);
-                }
-            });
 
             sideDrawerImg.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -132,32 +109,73 @@ public class LandingPageActivity extends AppCompatActivity {
                 }
             });
 
-            sideNav.setItemIconTintList(null);
-            NavController navController = Navigation.findNavController(this, R.id.navHostFragment);
-            NavigationUI.setupWithNavController(sideNav, navController);
+            //Manual "OnClicks" For Side Menu
+            //Pass Data Between Fragments... bundles, transactions
+            sideNav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Bundle bundle = new Bundle();
+                    if (user != null) {
+                        if (todaysTasks != null) {
+                            bundle.putSerializable("user", user);
+                            bundle.putSerializable("todaysTasks", todaysTasks);
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            FragmentTransaction sendData = fragmentManager.beginTransaction();
+                            System.out.println("======="+item.getItemId());
+                            System.out.println("======="+R.id.sideNavHome);
 
+                            switch (item.getItemId()) {
+                                case R.id.sideNavHome:
+                                    HomeFragment homeFragment = new HomeFragment();
+                                    homeFragment.setArguments(bundle);
+                                    sendData.replace(R.id.navHostFragment, homeFragment).commit();
+                                    break;
+                                case R.id.sideNavProfile:
+                                    ProfileFragment profileFragment = new ProfileFragment();
+                                    profileFragment.setArguments(bundle);
+                                    sendData.replace(R.id.navHostFragment, profileFragment).commit();
+                                    break;
+                                case R.id.sideNavTags:
+                                    TagsFragment tagsFragment = new TagsFragment();
+                                    tagsFragment.setArguments(bundle);
+                                    sendData.replace(R.id.navHostFragment, tagsFragment).commit();
+                                    break;
+                            }
+                        }
+                    }
+                    //Menu Cleanup... Update "checked" item, close drawer
+                    for (int i=0; i<sideNav.getMenu().size();i++ ){
+                        sideNav.getMenu().getItem(i).setChecked(false);
+                    }
+                    item.setChecked(true);
+                    drawerLayout.close();
+                    return false;
+                }
+            });
         }
 
     }
 
     @Override
     protected void onResume() {
+        //Put user data in bundle
+        //Start home fragment with bundle
         super.onResume();
         System.out.println("===========RESUMING=============");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction sendData = fragmentManager.beginTransaction();
+        Bundle bundle = new Bundle();
         if (user != null){
+            bundle.putSerializable("user", user);
             String name = user.getName();
-            welcomeMessage.setText("Welcome Back " + name + "!");
             sideNavName.setText(name);
         }
         if (todaysTasks.size() != 0){
-            landingNoTasksMsg.setVisibility(View.GONE);
-            anyChart.setVisibility(View.VISIBLE);
-            Stats todayStats = new Stats(todaysTasks);
-            Pie progressPie = AnyChart.pie();
-            List<DataEntry> todayCompleted = todayStats.getCompleteVsIncompleteData();
-            progressPie.data(todayCompleted);
-            anyChart.setChart(progressPie);
+            bundle.putSerializable("todaysTasks", todaysTasks);
         }
+        HomeFragment homeFragment = new HomeFragment();
+        homeFragment.setArguments(bundle);
+        sendData.replace(R.id.navHostFragment, homeFragment).commit();
     }
 
 //==================================================================================================
@@ -172,7 +190,7 @@ public class LandingPageActivity extends AppCompatActivity {
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task){
                             if (task.isSuccessful()) {
                                 DocumentSnapshot document = task.getResult();
                                 System.out.println("getting result");
@@ -180,7 +198,8 @@ public class LandingPageActivity extends AppCompatActivity {
                                 String email = (document.getString("email"));
                                 String gender = (document.getString("gender"));
                                 String name = (document.getString("name"));
-                                user = new User(email, name, dob, gender);
+                                String bio = (document.getString("bio"));
+                                user = new User(email, name, dob, gender, bio);
                                 System.out.println("first");
                                 }
                                 onResume();

@@ -15,14 +15,14 @@
         android:text="Graph Title"
         android:textColor="#EDE21C"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/any_chart_view"
+        app:layout_constraintBottom_toTopOf="@+id/progressRingView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.451" />
 
     <com.anychart.AnyChartView
-        android:id="@+id/any_chart_view"
+        android:id="@+id/progressRingView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="100dp"

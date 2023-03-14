@@ -4,16 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -40,11 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.sql.Time;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -298,14 +291,14 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 
 
 
-        newDateBtn = createTaskPopupView.findViewById(R.id.newTaskDate);
-        newDateBtn.setText(getTodaysDate());
+        newDateBtn = createTaskPopupView.findViewById(R.id.profileFragDob);
+        newDateBtn.setText(CalendarUtils.getTodaysDate());
 
         createTaskDialogBuilder.setView(createTaskPopupView);
         createTaskDialog = createTaskDialogBuilder.create();
         createTaskDialog.show();
 
-        newTaskTag = createTaskPopupView.findViewById(R.id.tagDropdown);
+        newTaskTag = createTaskPopupView.findViewById(R.id.profileFragGender);
 
         //==========================================================================================
         //HARDCODED TAGS
@@ -359,21 +352,12 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
     //DATE PICKER
 //==============================================================================================
 
-    private String getTodaysDate(){
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        month = month+1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        return makeDateString(day,month,year);
-    }
-
     private void initDatePicker(){
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month+1;
-                String date = makeDateString(day, month, year);
+                String date = CalendarUtils.makeDateString(day, month, year);
                 System.out.println("=========>"+date);
                 newDateBtn.setText(date);
             }
@@ -387,55 +371,6 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         int style = android.app.AlertDialog.THEME_HOLO_LIGHT;
 
         datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
-    }
-
-    private String makeDateString(int day, int month, int year){
-        String strDay;
-        if (day < 10){
-            strDay = "0" + Integer.toString(day);
-        }
-        else{strDay = Integer.toString(day);}
-        return getMonthFormat(month) + " " + strDay + " " + year;
-    };
-
-    private String getMonthFormat(int month){
-        if (month == 1){
-            return "January";
-        }
-        if (month == 2){
-            return "February";
-        }
-        if (month == 3){
-            return "March";
-        }
-        if (month == 4){
-            return "April";
-        }
-        if (month == 5){
-            return "May";
-        }
-        if (month == 6){
-            return "June";
-        }
-        if (month == 7){
-            return "July";
-        }
-        if (month == 8){
-            return "August";
-        }
-        if (month == 9){
-            return "September";
-        }
-        if (month == 10){
-            return "October";
-        }
-        if (month == 11){
-            return "November";
-        }
-        if (month == 12){
-            return "December";
-        }
-        return "ERROR";
     }
 
     public void openDatePicker(){

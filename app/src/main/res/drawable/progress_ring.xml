@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:shape="ring"
+            android:thicknessRatio="8"
+            android:useLevel="false">
+            <solid android:color="#777" />
+        </shape>
+    </item>
+    <item>
+        <rotate
+            android:fromDegrees="270"
+            android:toDegrees="270">
+            <!--The main attribute used here is android:useLevel="true" in
+            shape tag. Also gradient is added to set the startColor and
+            endColor of the ring.-->
+            <shape
+                android:shape="ring"
+                android:thicknessRatio="9"
+                android:useLevel="true">
+                <gradient
+                    android:startColor="#040C3E"
+                    android:centerColor="#1C6577"
+                    android:endColor="#3FDDD8"
+                    android:type="sweep" />
+
+            </shape>
+        </rotate>
+    </item>
+</layer-list>
