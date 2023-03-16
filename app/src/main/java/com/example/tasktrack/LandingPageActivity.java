@@ -37,6 +37,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,11 +49,11 @@ public class LandingPageActivity extends AppCompatActivity {
 
     //User Data
     private User user;
-    private ArrayList<TaskObj> todaysTasks;
+    private ArrayList<TaskObj> todaysTasks, todoTasks, completeTasks, incompleteTasks;
 
     //Layout
     private ImageView sideDrawerImg;
-    private TextView sideNavName;
+    private TextView sideNavName, fragmentTitle;
     private Button logOut;
     private NavigationView sideNav;
     private View sideNavHeader;
@@ -80,6 +82,7 @@ public class LandingPageActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.navHostFragment);
         NavigationUI.setupWithNavController(sideNav, navController);
 
+        fragmentTitle = findViewById(R.id.fragmentTitle);
 
 
         //Get db instance Check logged in
@@ -119,6 +122,9 @@ public class LandingPageActivity extends AppCompatActivity {
                         if (todaysTasks != null) {
                             bundle.putSerializable("user", user);
                             bundle.putSerializable("todaysTasks", todaysTasks);
+                            bundle.putSerializable("todoTasks", todoTasks);
+                            bundle.putSerializable("completedTasks", completeTasks);
+                            bundle.putSerializable("incompleteTasks", incompleteTasks);
                             FragmentManager fragmentManager = getSupportFragmentManager();
                             FragmentTransaction sendData = fragmentManager.beginTransaction();
                             System.out.println("======="+item.getItemId());
@@ -126,16 +132,19 @@ public class LandingPageActivity extends AppCompatActivity {
 
                             switch (item.getItemId()) {
                                 case R.id.sideNavHome:
+                                    fragmentTitle.setText("HOME");
                                     HomeFragment homeFragment = new HomeFragment();
                                     homeFragment.setArguments(bundle);
                                     sendData.replace(R.id.navHostFragment, homeFragment).commit();
                                     break;
                                 case R.id.sideNavProfile:
+                                    fragmentTitle.setText("PROFILE");
                                     ProfileFragment profileFragment = new ProfileFragment();
                                     profileFragment.setArguments(bundle);
                                     sendData.replace(R.id.navHostFragment, profileFragment).commit();
                                     break;
                                 case R.id.sideNavTags:
+                                    fragmentTitle.setText("TASK TAGS");
                                     TagsFragment tagsFragment = new TagsFragment();
                                     tagsFragment.setArguments(bundle);
                                     sendData.replace(R.id.navHostFragment, tagsFragment).commit();
@@ -172,6 +181,9 @@ public class LandingPageActivity extends AppCompatActivity {
         }
         if (todaysTasks.size() != 0){
             bundle.putSerializable("todaysTasks", todaysTasks);
+            bundle.putSerializable("todoTasks", todoTasks);
+            bundle.putSerializable("completedTasks", completeTasks);
+            bundle.putSerializable("incompleteTasks", incompleteTasks);
         }
         HomeFragment homeFragment = new HomeFragment();
         homeFragment.setArguments(bundle);
@@ -199,8 +211,8 @@ public class LandingPageActivity extends AppCompatActivity {
                                 String gender = (document.getString("gender"));
                                 String name = (document.getString("name"));
                                 String bio = (document.getString("bio"));
-                                user = new User(email, name, dob, gender, bio);
-                                System.out.println("first");
+                                ArrayList<String> tags = (ArrayList<String>) document.get("tags");
+                                user = new User(email, name, dob, gender, bio, tags);
                                 }
                                 onResume();
                             }
@@ -210,7 +222,8 @@ public class LandingPageActivity extends AppCompatActivity {
 
     public ArrayList<TaskObj> getTodaysTasks(Context context) {
         db = FirebaseFirestore.getInstance();
-        todaysTasks = new ArrayList<>();
+        todaysTasks = new ArrayList<>(); todoTasks = new ArrayList<>();
+        completeTasks = new ArrayList<>(); incompleteTasks = new ArrayList<>();
         String date = CalendarUtils.formattedDate(LocalDate.now());
 
 
@@ -239,6 +252,13 @@ public class LandingPageActivity extends AppCompatActivity {
                                         taskCompleted, taskIncomplete, taskDifficulty, null,
                                         null, null);
                                 todaysTasks.add(taskObj);
+                                if (taskObj.getCompleted()){
+                                    completeTasks.add(taskObj);
+                                }
+                                else if(taskObj.getIncomplete()){
+                                    incompleteTasks.add(taskObj);
+                                }
+                                else{todoTasks.add(taskObj);}
                             }
                             onResume();
                         }

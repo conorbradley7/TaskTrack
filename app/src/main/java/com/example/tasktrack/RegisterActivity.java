@@ -19,7 +19,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerBtn = findViewById(R.id.registerBtn);
         loginBtn = findViewById(R.id.loginAct);
-        emailInput = findViewById(R.id.registerEmailEditText);
+        emailInput = findViewById(R.id.newTagTitleEditText);
         passwordInput = findViewById(R.id.registerPasswordEditText);
         nameInput = findViewById(R.id.registerNameEditText);
 

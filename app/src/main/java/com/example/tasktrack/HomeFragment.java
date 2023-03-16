@@ -10,16 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.anychart.AnyChart;
-import com.anychart.AnyChartView;
-import com.anychart.chart.common.dataentry.DataEntry;
-import com.anychart.charts.Pie;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,11 +25,14 @@ public class HomeFragment extends Fragment {
     private ImageButton statsPageBtn;
 
     private User user;
-    private ArrayList<TaskObj> todaysTasks;
+    private ArrayList<TaskObj> todaysTasks, todoTasks, completeTasks, incompleteTasks;
 
-    private TextView welcomeMessage, landingNoTasksMsg, completionPercentage, completionFraction;
+    private TextView welcomeMessage, landingNoTasksMsg, completionPercentage, completionFraction,
+    recTaskTitle, recTaskTag, recommendedTaskHeader;
 
     private ProgressBar progressRing;
+
+    private LinearLayout recommendedTaskLayout;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -90,11 +88,19 @@ public class HomeFragment extends Fragment {
         progressRing = (ProgressBar) view.findViewById(R.id.progressRingView);
         completionFraction = (TextView) view.findViewById(R.id.completionFractionTV);
         completionPercentage = (TextView) view.findViewById(R.id.completionPercentageTV);
+        recTaskTitle = (TextView) view.findViewById(R.id.recTaskTitle);
+        recTaskTag = (TextView) view.findViewById(R.id.recTaskTag);
+        recommendedTaskLayout = (LinearLayout) view.findViewById(R.id.recommendedTask);
+        recommendedTaskHeader = (TextView) view.findViewById(R.id.recommendedTaskHeader);
+
 
 
         if (this.getArguments() != null) {
             user = (User) this.getArguments().getSerializable("user");
             todaysTasks = (ArrayList<TaskObj>) this.getArguments().getSerializable("todaysTasks");
+            todoTasks = (ArrayList<TaskObj>) this.getArguments().getSerializable("todoTasks");
+            completeTasks = (ArrayList<TaskObj>) this.getArguments().getSerializable("completedTasks");
+            incompleteTasks = (ArrayList<TaskObj>) this.getArguments().getSerializable("incompleteTasks");
 
             if (user != null) {
                 welcomeMessage.setText("Welcome Back " + user.getName() + "!");
@@ -125,17 +131,27 @@ public class HomeFragment extends Fragment {
                         progressRing.setVisibility(View.VISIBLE);
                         completionFraction.setVisibility(View.VISIBLE);
                         completionPercentage.setVisibility(View.VISIBLE);
-
-//                        Stats todayStats = new Stats(todaysTasks);
-//                        Pie progressPie = AnyChart.pie();
-//                        List<DataEntry> todayCompleted = todayStats.getCompleteVsIncompleteData();
-//                        progressPie.data(todayCompleted);
-//                        progressRing.setChart(progressPie);
+                        recommendedTaskHeader.setVisibility(View.VISIBLE);
+                        recommendedTaskLayout.setVisibility(View.VISIBLE);
+                        updateCompletionRing(todaysTasks);
+                        recTaskTitle.setText(todaysTasks.get(0).getTitle());
+                        recTaskTag.setText(todaysTasks.get(0).getTag());
                     }
                 }
             }
         }
         return view;
+    }
+
+    private void updateCompletionRing(ArrayList<TaskObj> completionTasks){
+        double complete = completeTasks.size(), total = completionTasks.size();
+
+        double completePercent = (complete/total)*100;
+        int completePercentInt = (int) Math.round(completePercent);
+
+        progressRing.setProgress(completePercentInt);
+        completionPercentage.setText(completePercentInt+"%");
+        completionFraction.setText(String.format("tasks complete %d/%d", (int)complete, completionTasks.size()));
     }
 
 }

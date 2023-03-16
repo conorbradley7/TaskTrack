@@ -10,7 +10,7 @@ public class User implements Serializable {
     //TODO
     //profile pic
 
-    public User(String email, String name, String dob, String gender, String bio){
+    public User(String email, String name, String dob, String gender, String bio, ArrayList<String> tags){
         this.email = email;
         this.name = name;
         this.dob = dob;

@@ -77,6 +77,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
     private Button startTaskBtn, completeTaskBtn, incompleteTaskBtn, startCompleteBackBtn;
     private ConstraintLayout completeTaskLayout, startTaskLayout;
 
+    private User user;
 
     enum taskSectionTypes{
         complete,
@@ -115,7 +116,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         mAuth = FirebaseAuth.getInstance();
 
         Intent intent = getIntent();
-        User user = (User)intent.getExtras().getSerializable("user");
+        user = (User)intent.getExtras().getSerializable("user");
 
         Boolean isLoggedIn = DBUtilities.checkLoggedIn();
         if (!isLoggedIn) {
@@ -300,16 +301,8 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
 
         newTaskTag = createTaskPopupView.findViewById(R.id.profileFragGender);
 
-        //==========================================================================================
-        //HARDCODED TAGS
-        //TODO: Tags => User Attribute, User makes their own tags
-        //==========================================================================================
-        ArrayList<String> userTags = new ArrayList<>();
-        userTags.add("School");
-        userTags.add("Personal");
-        userTags.add("Work");
 
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, userTags);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, user.getTags());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         newTaskTag.setAdapter(adapter);
 
