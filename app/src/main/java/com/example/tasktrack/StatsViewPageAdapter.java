@@ -59,14 +59,11 @@ public class StatsViewPageAdapter extends RecyclerView.Adapter<StatsViewPageAdap
     //Try calculating stats and figures in onCreate and not the adapter
     //Adapter Binding seems to be taking too long and not finishing.
     public void onBindViewHolder(@androidx.annotation.NonNull ViewHolder holder, int pos) {
-        System.out.println(pos+"====");
         switch (graphs.get(pos)){
             case tagsPie:
                 Pie tagsPie = AnyChart.pie();
                 List<DataEntry> data = stats.getTagsData();
                 tagsPie.data(data);
-                tagsPie.background().stroke("5 #EDE21C");
-                tagsPie.background().fill("#1E838C");
                 holder.anyChartView.setChart(tagsPie);
                 holder.pageGraphTitle.setText("Task Type Proportions");
                 break;
@@ -74,8 +71,6 @@ public class StatsViewPageAdapter extends RecyclerView.Adapter<StatsViewPageAdap
                 Pie compVsIncompPie = AnyChart.pie();
                 List<DataEntry> compVsIncompData = stats.getCompleteVsIncompleteData();
                 compVsIncompPie.data(compVsIncompData);
-                compVsIncompPie.background().stroke("5 #EDE21C");
-                compVsIncompPie.background().fill("#1E838C");
                 holder.anyChartView.setChart(compVsIncompPie);
                 holder.pageGraphTitle.setText("Task Complete Vs Incomplete");
                 break;
@@ -85,8 +80,6 @@ public class StatsViewPageAdapter extends RecyclerView.Adapter<StatsViewPageAdap
                 Column column = difficultyCartesian.column(difficultyData);
                 difficultyCartesian.xAxis(0).title("Difficulty");
                 difficultyCartesian.yAxis(0).title("Frequency");
-                difficultyCartesian.background().stroke("5 #EDE21C");
-                difficultyCartesian.background().fill("#1E838C");
                 holder.anyChartView.setChart(difficultyCartesian);
                 holder.pageGraphTitle.setText("Task Difficulty Spread");
                 break;
@@ -94,8 +87,6 @@ public class StatsViewPageAdapter extends RecyclerView.Adapter<StatsViewPageAdap
                 Pie onTimePie = AnyChart.pie();
                 List<DataEntry> onTimePieData = stats.getOnTimeData();
                 onTimePie.data(onTimePieData);
-                onTimePie.background().stroke("5 #EDE21C");
-                onTimePie.background().fill("#1E838C");
                 holder.anyChartView.setChart(onTimePie);
                 holder.pageGraphTitle.setText("Task Completed On Time Or Over Time");
                 break;
@@ -121,8 +112,6 @@ public class StatsViewPageAdapter extends RecyclerView.Adapter<StatsViewPageAdap
                         .hAlign(HAlign.START)
                         .format("Actual Duration: {%Value} mins.\\nExpected Duration: {%X} mins.");
                 Line onTimeScatterLine = onTimeScatter.line(stats.getOnTimeScatterLine());
-                onTimeScatter.background().stroke("5 #EDE21C");
-                onTimeScatter.background().fill("#1E838C");
                 holder.anyChartView.setChart(onTimeScatter);
                 holder.pageGraphTitle.setText("Expected vs Actual Task Times");
                 break;

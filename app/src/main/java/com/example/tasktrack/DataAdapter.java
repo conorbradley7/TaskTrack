@@ -95,8 +95,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
 
         public ViewHolder(@NonNull View itemView, RecycleViewInterface recycleViewInterface) {
             super(itemView);
-            rowTitle = itemView.findViewById(R.id.recTaskTitle);
-            rowTag = itemView.findViewById(R.id.recTaskTag);
+            rowTitle = itemView.findViewById(R.id.time);
+            rowTag = itemView.findViewById(R.id.tasksList);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

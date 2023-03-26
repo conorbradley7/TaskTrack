@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -34,7 +35,7 @@ public class TagsFragment extends Fragment {
     private RecyclerView recycleView = null;
     private User user;
     private RecycleViewInterface recycleViewInterface;
-    private Button newTagBtn, newTagAddBtn, newTagBackBtn;
+    private ImageButton newTagBtn, newTagAddBtn, newTagBackBtn;
     private AlertDialog.Builder newTagDialogBuilder;
     private AlertDialog newTagDialog;
     private EditText newTagTitle;
@@ -53,7 +54,7 @@ public class TagsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tags, container, false);
 
-        newTagBtn = (Button) view.findViewById(R.id.newTagBtn);
+        newTagBtn = (ImageButton) view.findViewById(R.id.newTagBtn);
 
 
         recycleView = (RecyclerView) view.findViewById(R.id.tagsRecyclerView);

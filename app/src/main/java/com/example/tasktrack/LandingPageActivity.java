@@ -127,8 +127,6 @@ public class LandingPageActivity extends AppCompatActivity {
                             bundle.putSerializable("incompleteTasks", incompleteTasks);
                             FragmentManager fragmentManager = getSupportFragmentManager();
                             FragmentTransaction sendData = fragmentManager.beginTransaction();
-                            System.out.println("======="+item.getItemId());
-                            System.out.println("======="+R.id.sideNavHome);
 
                             switch (item.getItemId()) {
                                 case R.id.sideNavHome:

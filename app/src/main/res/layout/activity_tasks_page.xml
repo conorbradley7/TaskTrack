@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_register_background"
+    android:background="@drawable/base_gradient_background"
     tools:context=".TasksPageActivity">
 
     <LinearLayout
@@ -19,7 +19,7 @@
             android:id="@+id/dateSelector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#1E838C"
+            android:background="#040C3E"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingLeft="40dp"
@@ -148,7 +148,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="200dp"
-        android:background="@drawable/task_list_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -177,21 +176,33 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <Button
+            <ImageButton
                 android:id="@+id/homeBtn"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:backgroundTint="@color/blue"
-                android:text="Home" />
+                android:src="@drawable/ic_baseline_home_24" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/newTaskBtn"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:backgroundTint="@color/blue"
-                android:text="New Task" />
+                android:src="@drawable/ic_baseline_playlist_add_24" />
+
+            <ImageButton
+                android:id="@+id/generateSchedule"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/blue"
+                android:src="@drawable/ic_baseline_schedule_24" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

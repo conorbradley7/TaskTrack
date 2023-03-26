@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.anychart.AnyChart;
@@ -48,7 +49,7 @@ enum graphs{
 }
 
 public class StatsActivity extends AppCompatActivity implements RecycleViewInterface{
-    Button homeBtn;
+    ImageButton homeBtn;
     private ArrayList<TaskObj> tasks;
     private RecyclerView statSections;
     private StatsSectionAdapter adapter;

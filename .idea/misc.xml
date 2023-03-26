@@ -4,32 +4,48 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../../../layout/custom_preview.xml" value="0.13908872901678657" />
+        <entry key="app/src/main/res/drawable-anydpi/ic_action_down.xml" value="0.2215" />
+        <entry key="app/src/main/res/drawable-anydpi/ic_action_name.xml" value="0.2215" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.169" />
+        <entry key="app/src/main/res/drawable/base_gradient_background.xml" value="0.1315" />
         <entry key="app/src/main/res/drawable/completed_task_background.xml" value="0.2585" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_circle_24.xml" value="0.208" />
+        <entry key="app/src/main/res/drawable/ic_baseline_add_circle_48.xml" value="0.2215" />
+        <entry key="app/src/main/res/drawable/ic_baseline_arrow_circle_down_24.xml" value="0.2215" />
         <entry key="app/src/main/res/drawable/ic_baseline_arrow_circle_left_24.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/ic_baseline_arrow_circle_right_24.xml" value="0.245" />
+        <entry key="app/src/main/res/drawable/ic_baseline_backspace_24.xml" value="0.2215" />
         <entry key="app/src/main/res/drawable/ic_baseline_bar_chart_24.xml" value="0.1165" />
+        <entry key="app/src/main/res/drawable/ic_baseline_cottage_24.xml" value="0.2215" />
+        <entry key="app/src/main/res/drawable/ic_baseline_format_list_bulleted_24.xml" value="0.2215" />
+        <entry key="app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.247" />
         <entry key="app/src/main/res/drawable/ic_baseline_menu_24.xml" value="0.2515" />
         <entry key="app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.2515" />
         <entry key="app/src/main/res/drawable/ic_baseline_person_small.xml" value="0.159" />
+        <entry key="app/src/main/res/drawable/ic_baseline_playlist_add_24.xml" value="0.2215" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.2215" />
+        <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.2215" />
         <entry key="app/src/main/res/drawable/incomplete_task_background.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/login_register_background.xml" value="0.18" />
         <entry key="app/src/main/res/drawable/progress_ring.xml" value="0.249" />
+        <entry key="app/src/main/res/drawable/round_white_black_border.xml" value="0.2215" />
         <entry key="app/src/main/res/drawable/section_background_white.xml" value="0.249" />
         <entry key="app/src/main/res/drawable/section_background_white_flat_btm.xml" value="0.249" />
         <entry key="app/src/main/res/drawable/section_background_white_round.xml" value="0.225" />
         <entry key="app/src/main/res/drawable/section_white_flat_btm.xml" value="0.249" />
+        <entry key="app/src/main/res/drawable/section_white_flat_btm_opaque.xml" value="0.157" />
         <entry key="app/src/main/res/drawable/selected_date_background.xml" value="0.1325" />
+        <entry key="app/src/main/res/drawable/spinner_background.xml" value="0.22" />
         <entry key="app/src/main/res/drawable/splash_background.xml" value="0.1605" />
         <entry key="app/src/main/res/drawable/tag_background.xml" value="0.207" />
         <entry key="app/src/main/res/drawable/task_background.xml" value="0.2515" />
         <entry key="app/src/main/res/drawable/task_list_background.xml" value="0.11" />
-        <entry key="app/src/main/res/layout/activity_landing_page.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_login.xml" value="0.1543280338895494" />
+        <entry key="app/src/main/res/layout/activity_generate_schedule.xml" value="0.22282608695652173" />
+        <entry key="app/src/main/res/layout/activity_landing_page.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19610507246376813" />
         <entry key="app/src/main/res/layout/activity_new_task.xml" value="0.19965871175130206" />
-        <entry key="app/src/main/res/layout/activity_register.xml" value="0.33087310791015623" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_splash_screeen.xml" value="0.2171875" />
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.2421875" />
         <entry key="app/src/main/res/layout/activity_stats.xml" value="0.24644592285156253" />
@@ -47,9 +63,11 @@
         <entry key="app/src/main/res/layout/new_tag_popup.xml" value="0.3333333333333333" />
         <entry key="app/src/main/res/layout/new_task_popup.xml" value="0.3190060424804688" />
         <entry key="app/src/main/res/layout/row_layout.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/schedule_row.xml" value="0.23278985507246377" />
+        <entry key="app/src/main/res/layout/schedule_section.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/side_nav_header.xml" value="0.33643544514973955" />
-        <entry key="app/src/main/res/layout/start_task_popup.xml" value="0.3875" />
-        <entry key="app/src/main/res/layout/stat_section.xml" value="0.22604166666666667" />
+        <entry key="app/src/main/res/layout/start_task_popup.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/stat_section.xml" value="0.30299936930338545" />
         <entry key="app/src/main/res/layout/tag_row_layout.xml" value="0.19947916666666668" />
         <entry key="app/src/main/res/layout/task_details_popup.xml" value="0.3875" />
         <entry key="app/src/main/res/layout/task_section_layout.xml" value="0.3922018348623853" />
@@ -62,5 +80,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.22282608695652173" />
+      </ProjectState>
+    </option>
   </component>
 </project>

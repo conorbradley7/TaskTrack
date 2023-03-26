@@ -49,8 +49,8 @@ import static com.example.tasktrack.CalendarUtils.monthYearFromDate;
 
 
 public class TasksPageActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener, RecycleViewInterface{
-    private Button  newTask, home, newAddTaskBtn, newBackBtn, newDateBtn;
-    private ImageButton prevWeekBtn,nextWeekBtn;
+    private Button newAddTaskBtn, newBackBtn, newDateBtn;
+    private ImageButton prevWeekBtn,nextWeekBtn, newTask, home, generateSchedule;
     private ViewPager2 recycleView = null;
     private TaskSectionAdapter adapter;
     private ArrayList<TaskObj> tasks, completedTasks, incompleteTasks, todoTasks;
@@ -103,6 +103,7 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
         newTask = findViewById(R.id.newTaskBtn);
         home = findViewById(R.id.homeBtn);
         recycleView = findViewById(R.id.taskSections);
+        generateSchedule = findViewById(R.id.generateSchedule);
 //        recycleView.setLayoutManager(new LinearLayoutManager(this));
 //        recycleView.setItemAnimator(new DefaultItemAnimator());
 
@@ -161,6 +162,20 @@ public class TasksPageActivity extends AppCompatActivity implements CalendarAdap
                     CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusWeeks(1);
                     setWeekView();
                     tasks = getTasks(TasksPageActivity.this);
+                }
+            });
+
+            generateSchedule.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Day today = new Day(tasks);
+                    today.scheduleBins();
+                    Intent genSchedule = new Intent(TasksPageActivity.this, GenerateScheduleActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("today", today);
+                    bundle.putSerializable("user", user);
+                    genSchedule.putExtras(bundle);
+                    startActivity(genSchedule);
                 }
             });
         }

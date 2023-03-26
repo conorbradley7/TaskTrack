@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/login_register_background"
+        android:background="@drawable/base_gradient_background"
         tools:context=".LandingPageActivity">
 
         <TextView
@@ -75,8 +75,8 @@
 
             <ProgressBar
                 android:id="@+id/progressRingView"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginRight="30dp"
@@ -116,7 +116,7 @@
                 android:text="0/3 Tasks Complete"
                 android:textColor="#000"
                 android:textSize="16sp"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -160,7 +160,7 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
-                    android:id="@+id/recTaskTitle"
+                    android:id="@+id/time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -171,7 +171,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/recTaskTag"
+                    android:id="@+id/tasksList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="5dp"
@@ -195,13 +195,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <Button
+            <ImageButton
                 android:id="@+id/tasksBtn"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Tasks" />
+                android:src="@drawable/ic_baseline_format_list_bulleted_24" />
 
             <ImageButton
                 android:id="@+id/statsBtn"

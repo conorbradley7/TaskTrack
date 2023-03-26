@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -154,7 +155,6 @@ public class ProfileFragment extends Fragment {
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month+1;
                 String date = CalendarUtils.makeDateString(day, month, year);
-                System.out.println("=========>"+date);
                 dobBtn.setText(date);
             }
         };
@@ -191,8 +191,8 @@ public class ProfileFragment extends Fragment {
     }
 
     public int getGenderIndex(String gender){
-        if (gender == "Male") {return 0;}
-        else if(gender == "Female"){return 1;}
+        if (Objects.equals(gender, "Male")) {return 0;}
+        else if(Objects.equals(gender, "Female")){return 1;}
         else{return 2;}
     }
 
@@ -208,6 +208,11 @@ public class ProfileFragment extends Fragment {
             dobBtn.setError("D.O.B Required");
             return;
         }
+
+        user.setBio(bio);
+        user.setDob(dob);
+        user.setGender(gender);
+        setProfileAttributes(user);
 
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() == null) {

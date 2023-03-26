@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -21,8 +20,7 @@ import java.util.ArrayList;
  */
 public class HomeFragment extends Fragment {
 
-    private Button taskPageBtn;
-    private ImageButton statsPageBtn;
+    private ImageButton statsPageBtn, taskPageBtn;
 
     private User user;
     private ArrayList<TaskObj> todaysTasks, todoTasks, completeTasks, incompleteTasks;
@@ -81,15 +79,15 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_home, container, false);
 
-        taskPageBtn = (Button) view.findViewById(R.id.tasksBtn);
+        taskPageBtn = (ImageButton) view.findViewById(R.id.tasksBtn);
         statsPageBtn = (ImageButton) view.findViewById(R.id.statsBtn);
         welcomeMessage = (TextView) view.findViewById(R.id.welcomeMsg);
         landingNoTasksMsg = (TextView) view.findViewById(R.id.landingNoTasksMsg);
         progressRing = (ProgressBar) view.findViewById(R.id.progressRingView);
         completionFraction = (TextView) view.findViewById(R.id.completionFractionTV);
         completionPercentage = (TextView) view.findViewById(R.id.completionPercentageTV);
-        recTaskTitle = (TextView) view.findViewById(R.id.recTaskTitle);
-        recTaskTag = (TextView) view.findViewById(R.id.recTaskTag);
+        recTaskTitle = (TextView) view.findViewById(R.id.time);
+        recTaskTag = (TextView) view.findViewById(R.id.tasksList);
         recommendedTaskLayout = (LinearLayout) view.findViewById(R.id.recommendedTask);
         recommendedTaskHeader = (TextView) view.findViewById(R.id.recommendedTaskHeader);
 

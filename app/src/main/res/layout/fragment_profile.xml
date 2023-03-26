@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/login_register_background"
+        android:background="@drawable/base_gradient_background"
         android:clickable="false">
 
         <Button
@@ -25,8 +25,8 @@
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/profileFragPic"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginTop="50dp"
             android:scaleType="centerCrop"
             android:src="@drawable/profile"
@@ -39,7 +39,7 @@
             android:id="@+id/profileFragName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/bebas_neue_regular"
             android:text="Your Name"
             android:textColor="#EDE21C"
@@ -66,7 +66,7 @@
             android:layout_height="0dp"
             android:layout_marginHorizontal="10dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/section_white_flat_btm_opaque"
             android:paddingVertical="30dp"
@@ -92,9 +92,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="30dp"
+                    android:background="@color/white"
                     android:enabled="false"
                     android:inputType="textMultiLine"
-                    android:lines="3" />
+                    android:lines="3"
+                    android:padding="20dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -104,8 +106,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="30dp"
                 android:layout_marginTop="30dp"
+                android:background="@drawable/spinner_background"
                 android:contentDescription="Tag"
                 android:minHeight="48dp"
+                android:padding="20dp"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -113,12 +117,14 @@
 
             <Button
                 android:id="@+id/profileFragDob"
-                style="?android:spinnerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="30dp"
                 android:layout_marginTop="30dp"
+                android:backgroundTint="@color/white"
                 android:enabled="false"
+                android:gravity="left|center_vertical"
+                android:padding="20dp"
                 android:text="D.O.B"
                 android:textColor="#000000"
                 app:layout_constraintEnd_toEndOf="parent"
