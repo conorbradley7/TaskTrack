@@ -55,14 +55,12 @@ public class StatsSectionAdapter extends RecyclerView.Adapter<StatsSectionAdapte
             case taskCompletion:
                 titles = new ArrayList<>();
                 titles.add(graphs.completeVsIncompletePie);
-                titles.add(graphs.tagsPie);
                 adapter = new StatsViewPageAdapter(context, R.layout.graph_views, titles, tasks, stats,recycleViewInterface);
                 holder.sectionHeading.setText("Completion Stats");
                 break;
             case taskTags:
                 titles = new ArrayList<>();
                 titles.add(graphs.tagsPie);
-                titles.add(graphs.completeVsIncompletePie);
                 adapter = new StatsViewPageAdapter(context, R.layout.graph_views, titles, tasks, stats,recycleViewInterface);
                 holder.sectionHeading.setText("Tag Stats");
                 break;

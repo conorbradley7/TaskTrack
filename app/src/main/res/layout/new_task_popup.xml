@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/base_gradient_background">
+    android:background="@drawable/popup_background">
 
     <TextView
         android:id="@+id/newTaskTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/fastup_bold"
         android:padding="10dp"
         android:text="New Task"
-        android:textColor="#EDE21C"
+        android:textColor="@color/black"
         android:textSize="50sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,12 +73,16 @@
 
     <Button
         android:id="@+id/profileFragDob"
-        style="?android:spinnerStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="30dp"
+        android:backgroundTint="@color/white"
+        android:gravity="left|center_vertical"
+        android:padding="10dp"
+        android:paddingLeft="20dp"
         android:text="Date"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileFragGender" />

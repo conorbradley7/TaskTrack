@@ -124,17 +124,22 @@ public class HomeFragment extends Fragment {
                     }
                 });
                 if (todaysTasks != null) {
-                    if (todaysTasks.size() != 0) {
+                    if (todaysTasks.size() > 0) {
                         landingNoTasksMsg.setVisibility(View.GONE);
                         progressRing.setVisibility(View.VISIBLE);
                         completionFraction.setVisibility(View.VISIBLE);
                         completionPercentage.setVisibility(View.VISIBLE);
-                        recommendedTaskHeader.setVisibility(View.VISIBLE);
-                        recommendedTaskLayout.setVisibility(View.VISIBLE);
                         updateCompletionRing(todaysTasks);
-                        recTaskTitle.setText(todaysTasks.get(0).getTitle());
-                        recTaskTag.setText(todaysTasks.get(0).getTag());
+                        if (todoTasks != null) {
+                            if (todoTasks.size() > 0){
+                                recTaskTitle.setText(todoTasks.get(0).getTitle());
+                                recTaskTag.setText(todoTasks.get(0).getTag());
+                                recommendedTaskHeader.setVisibility(View.VISIBLE);
+                                recommendedTaskLayout.setVisibility(View.VISIBLE);
+                            }
+                        }
                     }
+
                 }
             }
         }

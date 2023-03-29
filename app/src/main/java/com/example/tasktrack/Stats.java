@@ -20,9 +20,9 @@ import java.util.Objects;
 public class Stats {
     public List<DataEntry> completeVsIncompleteData, tagsData, difficultyData, onTimeData, onTimeScatterPoints, onTimeScatterLine;
 
-    public Stats (ArrayList<TaskObj> tasks){
+    public Stats (ArrayList<TaskObj> tasks, ArrayList<String> tags){
         this.completeVsIncompleteData = genCompleteVsIncompletePie(tasks);
-        this.tagsData = genTagsPie(tasks);
+        this.tagsData = genTagsPie(tasks, tags);
         this.difficultyData = genDifficultyBarChart(tasks);
         this.onTimeData = genOnTimeData(tasks);
         this.onTimeScatterPoints = genOnTimeScatterPoints(tasks);
@@ -46,23 +46,22 @@ public class Stats {
         return data;
     }
 
-    public List<DataEntry> genTagsPie(@NonNull ArrayList<TaskObj> tasks){
-        int schoolTotal = 0, personalTotal= 0, workTotal = 0;
+    public List<DataEntry> genTagsPie(@NonNull ArrayList<TaskObj> tasks, ArrayList<String> tags){
+        ArrayList<Integer> totals = new ArrayList<>();
+        for (int x=0;x<tags.size();x++){
+            totals.add(0);
+        }
         for (int i=0; i<tasks.size(); i++){
-            if (Objects.equals(tasks.get(i).getTag(), "School")){
-                schoolTotal += 1;
-            }
-            if (Objects.equals(tasks.get(i).getTag(), "Personal")){
-                personalTotal += 1;
-            }
-            if (Objects.equals(tasks.get(i).getTag(), "Work")){
-                workTotal += 1;
+            for (int j=0; j<tags.size(); j++) {
+                if (Objects.equals(tasks.get(i).getTag(), tags.get(j))) {
+                     totals.set(j, totals.get(j)+1);
+                }
             }
         }
         List<DataEntry> data = new ArrayList<>();
-        data.add(new ValueDataEntry("School", schoolTotal));
-        data.add(new ValueDataEntry("Personal", personalTotal));
-        data.add(new ValueDataEntry("Work", workTotal));
+        for (int y=0; y<tags.size(); y++) {
+            data.add(new ValueDataEntry(tags.get(y), totals.get(y)));
+        }
 
         return data;
     }

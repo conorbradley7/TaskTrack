@@ -2,6 +2,7 @@ package com.example.tasktrack;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Image;
 import android.os.Bundle;
 
@@ -90,6 +91,7 @@ public class ProfileFragment extends Fragment {
                 profileFragBio.setEnabled(true);
                 dobBtn.setEnabled(true);
                 profileFragGender.setEnabled(true);
+                dobBtn.setTextColor(Color.parseColor("#000000"));
             }
         });
 
@@ -103,6 +105,7 @@ public class ProfileFragment extends Fragment {
                 profileFragBio.setEnabled(false);
                 dobBtn.setEnabled(false);
                 profileFragGender.setEnabled(false);
+                dobBtn.setTextColor(Color.parseColor("#6E6A6A"));
 
                 if (user != null) {
                     setProfileAttributes(user);
@@ -120,6 +123,7 @@ public class ProfileFragment extends Fragment {
                 profileFragBio.setEnabled(false);
                 dobBtn.setEnabled(false);
                 profileFragGender.setEnabled(false);
+                dobBtn.setTextColor(Color.parseColor("#6E6A6A"));
 
                 updateUserInDB();
                 onResume();

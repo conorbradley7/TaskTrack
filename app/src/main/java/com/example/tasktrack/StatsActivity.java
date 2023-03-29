@@ -58,6 +58,8 @@ public class StatsActivity extends AppCompatActivity implements RecycleViewInter
     private static FirebaseAuth mAuth;
     private static FirebaseFirestore db;
 
+    private User user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,9 @@ public class StatsActivity extends AppCompatActivity implements RecycleViewInter
             tasks = getTasks(this);
             homeBtn = findViewById(R.id.homeBtn);
             statSections = findViewById(R.id.stat_sections);
+            Intent intent = getIntent();
+            user = (User)intent.getExtras().getSerializable("user");
+
 
             statSections.setLayoutManager(new LinearLayoutManager(this));
             statSections.setItemAnimator(new DefaultItemAnimator());
@@ -132,7 +137,7 @@ public class StatsActivity extends AppCompatActivity implements RecycleViewInter
     protected void onResume() {
         super.onResume();
         System.out.println("===========RESUMING_STATS=============");
-        Stats stats = new Stats(tasks);
+        Stats stats = new Stats(tasks, user.getTags());
         ArrayList<sectionTypes> sections = new ArrayList<>();
         sections.add(sectionTypes.taskTime);
         sections.add(sectionTypes.taskCompletion);
